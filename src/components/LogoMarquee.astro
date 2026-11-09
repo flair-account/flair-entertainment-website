@@ -1,0 +1,85 @@
+---
+import { Image } from 'astro:assets'
+import { CLIENT_LOGOS } from '@/data/logos'
+
+const LOGO_HEIGHT = 56
+---
+
+<section class="trusted" aria-labelledby="trusted-heading">
+	<h2 id="trusted-heading" class="eyebrow">Trusted by</h2>
+	<div class="viewport">
+		<ul class="track">
+			{
+				[0, 1].map((copy) =>
+					CLIENT_LOGOS.map((logo) => (
+						<li aria-hidden={copy === 1 ? 'true' : undefined}>
+							<Image src={logo.image} alt={copy === 1 ? '' : logo.name} height={LOGO_HEIGHT} densities={[1, 2]} />
+						</li>
+					)),
+				)
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.trusted {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 40px;
+		padding-block: 96px;
+		border-block: 1px solid rgba(26, 26, 26, 0.08);
+	}
+
+	.viewport {
+		width: 100%;
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+	}
+
+	/* Two identical runs scroll by exactly one run's width, so the loop has no visible seam. */
+	.track {
+		display: flex;
+		align-items: center;
+		gap: 72px;
+		width: max-content;
+		padding-right: 72px;
+		animation: scroll 48s linear infinite;
+	}
+
+	.track li {
+		flex: none;
+	}
+
+	.track img {
+		width: auto;
+		height: 56px;
+		max-width: 180px;
+		object-fit: contain;
+	}
+
+	.viewport:hover .track {
+		animation-play-state: paused;
+	}
+
+	@keyframes scroll {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.track {
+			flex-wrap: wrap;
+			justify-content: center;
+			width: auto;
+			padding-inline: var(--gutter);
+			animation: none;
+		}
+
+		.track li[aria-hidden] {
+			display: none;
+		}
+	}
+</style>

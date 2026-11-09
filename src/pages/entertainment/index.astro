@@ -1,0 +1,78 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import StudyCard from '@/components/StudyCard.astro'
+import InstagramSection from '@/components/InstagramSection.astro'
+import { CASE_STUDIES } from '@/data/studies'
+
+const site = Astro.site ?? new URL('https://flairentertainment.je')
+const collection = {
+	'@type': 'CollectionPage',
+	name: 'Bespoke entertainment case studies',
+	url: new URL('/entertainment/', site).href,
+	hasPart: CASE_STUDIES.map((study) => ({
+		'@type': 'CreativeWork',
+		name: `${study.title}: ${study.subtitle}`,
+		url: new URL(`/entertainment/${study.slug}/`, site).href,
+	})),
+}
+---
+
+<BaseLayout
+	title="Bespoke Entertainment"
+	description="Case studies of bespoke entertainment by Flair: luxury brand galas, corporate concepts, brand activations and Winter Enchanted, Jersey's most magical Christmas show."
+	image={CASE_STUDIES[0].cover}
+	imageAlt={CASE_STUDIES[0].coverAlt}
+	schema={[collection]}
+>
+	<section class="intro section">
+		<p class="eyebrow">Case studies</p>
+		<h1 class="display">Bespoke <span class="script">entertainment</span></h1>
+		<p class="lede">
+			Bespoke productions, choreographed pieces and speciality acts designed around your guests, your venue and your
+			story.
+		</p>
+	</section>
+
+	<section class="studies section" aria-label="Case studies">
+		{CASE_STUDIES.map((study, index) => <StudyCard study={study} eager={index < 3} />)}
+	</section>
+
+	<InstagramSection />
+</BaseLayout>
+
+<style>
+	.intro {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 36px;
+		padding-block: 160px 120px;
+		text-align: center;
+	}
+
+	.studies {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 96px 32px;
+		padding-bottom: 180px;
+	}
+
+	@media (max-width: 1100px) {
+		.studies {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 700px) {
+		.intro {
+			gap: 24px;
+			padding-block: 72px 64px;
+		}
+
+		.studies {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 64px;
+			padding-bottom: 112px;
+		}
+	}
+</style>

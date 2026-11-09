@@ -1,0 +1,181 @@
+---
+import { Image } from 'astro:assets'
+import logo from '@/assets/brand/logo.png'
+import { ENQUIRE_HREF, PRIMARY_NAV, SITE } from '@/data/site'
+
+const path = Astro.url.pathname
+const isCurrent = (href: string): boolean => (href === '/' ? path === '/' : path.startsWith(href))
+---
+
+<header class="site-header">
+	<a class="brand" href="/" aria-label={`${SITE.name} home`}>
+		<Image src={logo} alt={SITE.name} height={54} densities={[1, 2]} loading="eager" fetchpriority="high" />
+	</a>
+	<nav class="nav nav-desktop" aria-label="Primary">
+		{
+			PRIMARY_NAV.map((item) => (
+				<a href={item.href} class:list={{ current: isCurrent(item.href) }} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+					{item.label}
+				</a>
+			))
+		}
+		<a href={ENQUIRE_HREF} class="nav-enquire" aria-current={isCurrent(ENQUIRE_HREF) ? 'page' : undefined}>Enquire</a>
+	</nav>
+	<details class="nav-mobile">
+		<summary>
+			<span class="visually-hidden">Menu</span>
+			<span class="burger" aria-hidden="true"></span>
+		</summary>
+		<nav class="nav-sheet" aria-label="Primary">
+			{
+				PRIMARY_NAV.map((item) => (
+					<a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+						{item.label}
+					</a>
+				))
+			}
+			<a href={ENQUIRE_HREF} class="nav-enquire">Enquire</a>
+		</nav>
+	</details>
+</header>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 5;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 32px;
+		padding: 28px var(--gutter);
+		background: var(--paper);
+	}
+
+	.brand {
+		display: flex;
+	}
+
+	.brand img {
+		width: auto;
+		height: 54px;
+	}
+
+	.nav {
+		display: flex;
+		align-items: center;
+		gap: 44px;
+		font: 600 11px/1 var(--font-sans);
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
+	}
+
+	.nav .current {
+		padding-bottom: 6px;
+		border-bottom: 1px solid var(--ink);
+	}
+
+	.nav-enquire {
+		padding: 16px 28px;
+		border: 1px solid var(--ink);
+	}
+
+	.nav-mobile {
+		display: none;
+	}
+
+	@media (max-width: 860px) {
+		.site-header {
+			padding-block: 16px;
+		}
+
+		.brand img {
+			height: 40px;
+		}
+
+		.nav-desktop {
+			display: none;
+		}
+
+		.nav-mobile {
+			display: block;
+		}
+
+		summary {
+			display: grid;
+			place-items: center;
+			width: 44px;
+			height: 44px;
+			margin-right: -10px;
+			cursor: pointer;
+			list-style: none;
+		}
+
+		summary::-webkit-details-marker {
+			display: none;
+		}
+
+		.burger,
+		.burger::before,
+		.burger::after {
+			display: block;
+			width: 22px;
+			height: 1px;
+			background: var(--ink);
+			transition: transform 0.25s ease;
+		}
+
+		.burger {
+			position: relative;
+		}
+
+		.burger::before,
+		.burger::after {
+			content: '';
+			position: absolute;
+			left: 0;
+		}
+
+		.burger::before {
+			top: -7px;
+		}
+
+		.burger::after {
+			top: 7px;
+		}
+
+		[open] .burger {
+			background: transparent;
+		}
+
+		[open] .burger::before {
+			transform: translateY(7px) rotate(45deg);
+		}
+
+		[open] .burger::after {
+			transform: translateY(-7px) rotate(-45deg);
+		}
+
+		.nav-sheet {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 28px;
+			padding: 24px var(--gutter) 40px;
+			background: var(--paper);
+			border-bottom: 1px solid rgba(26, 26, 26, 0.12);
+			font: 600 12px/1 var(--font-sans);
+			letter-spacing: 0.28em;
+			text-transform: uppercase;
+		}
+
+		.nav-sheet [aria-current='page'] {
+			padding-bottom: 6px;
+			border-bottom: 1px solid var(--ink);
+		}
+	}
+</style>

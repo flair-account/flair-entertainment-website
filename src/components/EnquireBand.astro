@@ -1,0 +1,47 @@
+---
+import { ENQUIRE_HREF } from '@/data/site'
+
+interface Props {
+	eyebrow?: string
+	lead?: string
+	script?: string
+}
+
+const { eyebrow = 'Bespoke concepts', lead = 'Enquire about a bespoke', script = 'concept' } = Astro.props
+---
+
+<section class="band on-dark section" aria-labelledby="enquire-band-heading">
+	<p class="eyebrow">{eyebrow}</p>
+	<h2 id="enquire-band-heading" class="display">{lead} <span class="script">{script}</span></h2>
+	<a class="button" href={ENQUIRE_HREF}>Enquire</a>
+</section>
+
+<style>
+	.band {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 28px;
+		padding-block: 120px;
+		background: var(--ink);
+		color: var(--cream);
+		text-align: center;
+	}
+
+	.band .eyebrow {
+		color: var(--cream);
+		opacity: 0.6;
+	}
+
+	.band .display {
+		font-size: clamp(26px, 4vw, 40px);
+	}
+
+	.band .script {
+		font-size: clamp(44px, 6.4vw, 64px);
+	}
+
+	.band .button {
+		color: var(--cream);
+	}
+</style>

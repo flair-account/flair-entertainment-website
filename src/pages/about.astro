@@ -1,0 +1,228 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { CAREERS_HREF } from '@/data/site'
+import { TEAM } from '@/data/team'
+import culture from '@/assets/culture/culture.webp'
+
+const CULTURE = [
+	{
+		heading: 'A message from Megan',
+		paragraphs: [
+			'“Honestly, the culture at Flair is the thing I’m proudest of. It’s not something we tacked on later, it’s the whole reason any of this works.',
+			'We’re really big on what we accept and what we tolerate, because what we accept, everyone accepts. What we celebrate, everyone celebrates. So we keep the bar high and we hold it there together.',
+			'We work hard, we party hard, and when a big win comes in, we make a proper fuss of it. High standards, high celebration, and so much love for what we do and the people we get to do it with.”',
+		],
+	},
+	{
+		heading: 'Life inside Flair',
+		paragraphs: [
+			'“Everyone who joins Flair becomes part of the family and that’s the bit I love most.',
+			'It’s the late nights and the loud playlists. The group chat that never really switches off in show season. Celebrating the big wins loud, and the little ones even louder. We’re a team of people who care so much about getting it right, and honestly, that’s exactly how we like it.”',
+		],
+	},
+	{
+		heading: 'Culture first, always',
+		paragraphs: [
+			'“We didn’t build a team to put on events.',
+			'Instead, we built a culture and the events are what come out of it. The love is real, the standards are high, and the people are everything.”',
+		],
+	},
+	{
+		heading: 'Come join us',
+		paragraphs: ['“We’re always on the lookout for brilliant, passionate people to come build something special with us.”'],
+	},
+] as const
+
+const site = Astro.site ?? new URL('https://flairentertainment.je')
+const aboutPage = {
+	'@type': 'AboutPage',
+	url: new URL('/about/', site).href,
+	about: { '@id': `${site.href}#organization` },
+	mainEntity: TEAM.map((member) => ({
+		'@type': 'Person',
+		name: member.name,
+		jobTitle: member.fullRole,
+		worksFor: { '@id': `${site.href}#organization` },
+	})),
+}
+---
+
+<BaseLayout
+	title="About Flair"
+	description="Meet the team running Flair Entertainment: performers who have stood on the stage themselves, raising the standard of live entertainment in Jersey."
+	image={culture}
+	imageAlt="The Flair team lifting a performer in celebration"
+	schema={[aboutPage]}
+>
+	<section class="intro section">
+		<p class="eyebrow">Who we are</p>
+		<h1 class="display">Meet the team <span class="script">running flair</span></h1>
+		<p class="lede">
+			We exist to offer the finest entertainment experiences in Jersey, to raise standards, exceed expectations, and empower local performers to be
+			the best they can be. Flair is more than a choreographed, costumed act: it is run by a team who have stood on the stage themselves.
+		</p>
+	</section>
+
+	<section class="people section" aria-label="The team">
+		{
+			TEAM.map((member, index) => (
+				<article class="person">
+					<div class="portrait">
+						<Image
+							src={member.photo}
+							alt={member.name}
+							widths={[320, 480, 640]} width={640}
+							sizes="(max-width: 700px) 100vw, 320px"
+							loading={index === 0 ? 'eager' : 'lazy'}
+						/>
+					</div>
+					<div class="bio">
+						<p class="eyebrow">{member.fullRole}</p>
+						<h2 class="title">{member.name}</h2>
+						<p class="prose">{member.bio}</p>
+					</div>
+				</article>
+			))
+		}
+	</section>
+
+	<section class="culture section" aria-labelledby="culture-heading">
+		<div class="culture-image">
+			<Image src={culture} alt="The Flair team lifting a performer in celebration, in black and white" widths={[480, 720, 960]} width={960} sizes="(max-width: 900px) 100vw, 45vw" />
+		</div>
+		<div class="culture-copy">
+			<h2 id="culture-heading" class="display">Company <span class="script">culture</span></h2>
+			{
+				CULTURE.map((block) => (
+					<div class="culture-block">
+						<h3 class="eyebrow">{block.heading}</h3>
+						<div class="prose">
+							{block.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+						</div>
+					</div>
+				))
+			}
+			<a class="button" href={CAREERS_HREF}>Careers as a performer</a>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.intro {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 36px;
+		padding-block: 160px 120px;
+		text-align: center;
+	}
+
+	.intro .lede {
+		max-width: 720px;
+	}
+
+	.people {
+		display: flex;
+		flex-direction: column;
+		max-width: 1040px;
+		margin-inline: auto;
+		padding-bottom: 160px;
+	}
+
+	.person {
+		display: grid;
+		grid-template-columns: 320px minmax(0, 1fr);
+		gap: 56px;
+		align-items: start;
+		padding-block: 56px;
+		border-top: 1px solid rgba(26, 26, 26, 0.12);
+	}
+
+	.portrait img {
+		width: 100%;
+		aspect-ratio: 6 / 7;
+		object-fit: cover;
+		background: var(--sand);
+	}
+
+	.bio {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.bio .prose {
+		display: block;
+		margin-top: 8px;
+	}
+
+	.culture {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 96px;
+		align-items: start;
+		padding-bottom: 180px;
+	}
+
+	.culture-image {
+		position: sticky;
+		top: calc(var(--header-h) + 24px);
+	}
+
+	.culture-image img {
+		width: 100%;
+		filter: grayscale(1);
+	}
+
+	.culture-copy {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 40px;
+		max-width: 600px;
+	}
+
+	.culture-copy .display {
+		font-size: clamp(28px, 3.6vw, 44px);
+	}
+
+	.culture-block {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.culture-block .eyebrow {
+		color: var(--ink);
+	}
+
+	@media (max-width: 900px) {
+		.culture {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 56px;
+			padding-bottom: 112px;
+		}
+
+		.culture-image {
+			position: static;
+		}
+	}
+
+	@media (max-width: 700px) {
+		.intro {
+			gap: 24px;
+			padding-block: 72px 64px;
+		}
+
+		.person {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 28px;
+			padding-block: 40px;
+		}
+
+		.people {
+			padding-bottom: 96px;
+		}
+	}
+</style>

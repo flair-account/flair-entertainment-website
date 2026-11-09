@@ -1,0 +1,72 @@
+---
+import { Image } from 'astro:assets'
+import { INSTAGRAM_TILES } from '@/data/instagram'
+import { SITE } from '@/data/site'
+---
+
+<section class="instagram section" aria-labelledby="instagram-heading">
+	<p class="eyebrow">Find us on Instagram</p>
+	<h2 id="instagram-heading" class="handle">
+		<a href={SITE.instagramUrl} rel="me noopener">{SITE.instagramHandle}</a>
+	</h2>
+	<div class="links">
+		<a class="link-underline" href={SITE.instagramUrl} rel="me noopener">Instagram</a>
+		<a class="link-underline" href={SITE.facebookUrl} rel="me noopener">Facebook</a>
+	</div>
+	<ul class="grid">
+		{
+			INSTAGRAM_TILES.map((tile) => (
+				<li class="tile">
+					<Image src={tile} alt="" widths={[200, 320, 480]} width={480} sizes="(max-width: 700px) 33vw, 16vw" class="media-cover" />
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<style>
+	.instagram {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 40px;
+		padding-bottom: 140px;
+		text-align: center;
+	}
+
+	.handle {
+		font: 300 clamp(20px, 4vw, 28px) / 1 var(--font-sans);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.links {
+		display: flex;
+		gap: 40px;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: 12px;
+		width: 100%;
+	}
+
+	.tile {
+		position: relative;
+		aspect-ratio: 1;
+		overflow: hidden;
+		background: var(--sand);
+	}
+
+	@media (max-width: 700px) {
+		.instagram {
+			padding-bottom: 96px;
+		}
+
+		.grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 8px;
+		}
+	}
+</style>

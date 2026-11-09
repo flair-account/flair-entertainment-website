@@ -1,0 +1,224 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { FORM_ACTIONS, SITE } from '@/data/site'
+import tower from '@/assets/performers/tower.webp'
+import hoop from '@/assets/performers/hoop.webp'
+import lift from '@/assets/performers/lift.webp'
+import violin from '@/assets/performers/violin.webp'
+import fire from '@/assets/performers/fire.webp'
+import silks from '@/assets/performers/silks.webp'
+
+const DISCIPLINES = ['Dancer', 'Singer', 'Actor', 'Aerialist', 'Circus / Specialist', 'Musician', 'Choreographer', 'Other'] as const
+
+const BEHIND_THE_CURTAIN = [
+	{ image: tower, alt: 'Performer balanced on a human tower at a rehearsal', tall: true },
+	{ image: hoop, alt: 'Hoop dancer and dancers rehearsing', tall: false },
+	{ image: lift, alt: 'Dancers lifting a performer in celebration', tall: false },
+	{ image: silks, alt: 'Aerialist on silks beside a vocalist on stage', tall: true },
+	{ image: violin, alt: 'Violin duo performing', tall: false },
+	{ image: fire, alt: 'Fire performer on stage', tall: false },
+] as const
+
+const site = Astro.site ?? new URL('https://flairentertainment.je')
+const careersPage = {
+	'@type': 'WebPage',
+	name: 'Careers as a performer',
+	url: new URL('/careers/', site).href,
+	about: { '@id': `${site.href}#organization` },
+}
+---
+
+<BaseLayout
+	title="Careers as a Performer"
+	description="Join the Flair family. Dancers, singers, aerialists, musicians, fire performers and speciality acts: apply to perform with Flair Entertainment in Jersey."
+	image={silks}
+	imageAlt="Aerialist on silks beside a vocalist on stage"
+	schema={[careersPage]}
+>
+	<section class="intro section">
+		<p class="eyebrow">Careers as a performer</p>
+		<h1 class="display">Want to join <span class="script">the flair family?</span></h1>
+		<div class="lede">
+			<p>
+				Flair Entertainment is built by performers, for performers. That means no politics, no gatekeeping and no percentage taken from your fee, just
+				genuine opportunities and a team who understand what it takes to deliver on stage.
+			</p>
+			<p>
+				Whether you're a dancer, aerialist, musician, fire performer or specialty act, we're always looking to work with talent who take their craft
+				seriously and want to be part of something special.
+			</p>
+			<p>
+				At Flair you'll be looked after by our Artist Liaison, Stage Managers and Choreographers from first brief to final bow. Plus, we throw some
+				awesome parties too.
+			</p>
+			<p>
+				Tell us a bit about yourself, what you do, where you're based, where you've performed and a link to your portfolio or reel, and we'll be in
+				touch. You can also email <a href={`mailto:${SITE.performerEmail}`}>{SITE.performerEmail}</a>.
+			</p>
+		</div>
+	</section>
+
+	<section class="apply section" aria-label="Performer application">
+		<form class="form" action={FORM_ACTIONS.performer} method="post" enctype="text/plain">
+			<div class="field">
+				<label for="first-name">First name</label>
+				<input id="first-name" name="first-name" autocomplete="given-name" required />
+			</div>
+			<div class="field">
+				<label for="last-name">Last name</label>
+				<input id="last-name" name="last-name" autocomplete="family-name" required />
+			</div>
+			<div class="field">
+				<label for="email">Email</label>
+				<input id="email" name="email" type="email" autocomplete="email" required />
+			</div>
+			<div class="field">
+				<label for="phone">Contact number</label>
+				<input id="phone" name="phone" type="tel" autocomplete="tel" />
+			</div>
+			<div class="field field-wide">
+				<label for="location">Location</label>
+				<input id="location" name="location" autocomplete="address-level2" />
+			</div>
+			<div class="field field-wide">
+				<fieldset>
+					<legend>Act / discipline</legend>
+					<div class="choices">
+						{
+							DISCIPLINES.map((discipline) => (
+								<label class="choice">
+									<input type="checkbox" name="discipline" value={discipline} />
+									<span>{discipline}</span>
+								</label>
+							))
+						}
+					</div>
+				</fieldset>
+			</div>
+			<div class="field">
+				<label for="training">Professional training</label>
+				<input id="training" name="training" />
+			</div>
+			<div class="field">
+				<label for="skills">Preferred genre and skills</label>
+				<input id="skills" name="skills" />
+			</div>
+			<div class="field">
+				<label for="portfolio">Portfolio / showreel link</label>
+				<input id="portfolio" name="portfolio" type="url" inputmode="url" placeholder="https://" />
+			</div>
+			<div class="field">
+				<label for="social">Social media handle</label>
+				<input id="social" name="social" placeholder="@" />
+			</div>
+			<div class="field field-wide">
+				<label for="message">Message</label>
+				<textarea id="message" name="message"></textarea>
+			</div>
+			<button class="button" type="submit">Send application</button>
+		</form>
+	</section>
+
+	<section class="curtain section" aria-labelledby="curtain-heading">
+		<div class="curtain-head">
+			<p class="eyebrow">A look behind the curtain</p>
+			<h2 id="curtain-heading" class="display"><span class="script">from us to you</span></h2>
+		</div>
+		<ul class="curtain-grid">
+			{
+				BEHIND_THE_CURTAIN.map((item) => (
+					<li class:list={{ tall: item.tall }}>
+						<Image src={item.image} alt={item.alt} widths={[360, 540, 800]} width={800} sizes="(max-width: 700px) 100vw, 33vw" class="media-cover" />
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</BaseLayout>
+
+<style>
+	.intro {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 36px;
+		padding-block: 160px 96px;
+		text-align: center;
+	}
+
+	.intro .lede {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		max-width: 680px;
+	}
+
+	.intro .lede a {
+		border-bottom: 1px solid currentColor;
+		color: var(--ink);
+	}
+
+	.apply {
+		max-width: calc(800px + 2 * var(--gutter));
+		margin-inline: auto;
+		padding-bottom: 160px;
+	}
+
+	.curtain {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 48px;
+		padding-bottom: 160px;
+	}
+
+	.curtain-head {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+
+	.curtain-head .script {
+		margin-left: 0;
+	}
+
+	.curtain-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-auto-rows: minmax(0, 1fr);
+		grid-auto-flow: dense;
+		gap: 16px;
+		width: 100%;
+	}
+
+	.curtain-grid li {
+		position: relative;
+		aspect-ratio: 16 / 15;
+		overflow: hidden;
+		background: var(--sand);
+	}
+
+	.curtain-grid .tall {
+		grid-row: span 2;
+		aspect-ratio: auto;
+	}
+
+	@media (max-width: 700px) {
+		.intro {
+			gap: 24px;
+			padding-block: 72px 56px;
+		}
+
+		.apply,
+		.curtain {
+			padding-bottom: 96px;
+		}
+
+		.curtain-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+		}
+	}
+</style>

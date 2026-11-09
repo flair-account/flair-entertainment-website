@@ -1,0 +1,331 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import FittedVideo from '@/components/FittedVideo.astro'
+import LogoMarquee from '@/components/LogoMarquee.astro'
+import InstagramSection from '@/components/InstagramSection.astro'
+import { CAREERS_HREF, ENQUIRE_HREF, SITE } from '@/data/site'
+import { PRESS } from '@/data/logos'
+import { TEAM } from '@/data/team'
+import heroPoster from '@/assets/video/hero-poster.webp'
+import entertainment from '@/assets/home/entertainment.webp'
+import music from '@/assets/home/music.webp'
+import events from '@/assets/home/events.webp'
+import cta from '@/assets/home/cta.webp'
+
+const PILLARS = [
+	{
+		title: 'Entertainment',
+		text: 'Bespoke productions, choreographed pieces and speciality acts designed around your guests, your venue and your story.',
+		image: entertainment,
+		alt: 'Performer in a Venetian mask and corset in front of a gilded set piece',
+		link: { label: 'View entertainment', href: '/entertainment/' },
+	},
+	{
+		title: 'Music',
+		text: 'Live bands, DJs, vocalists and acoustic sets curated for the moment: arrival, dinner, dancefloor.',
+		image: music,
+		alt: 'Three musicians posing with a violin, in black and white',
+		link: undefined,
+	},
+	{
+		title: 'Events',
+		text: 'Keep up with our own productions and public shows across Jersey via our socials.',
+		image: events,
+		alt: 'Aerialist on silks above a vocalist in a ball gown on stage',
+		link: { label: 'Upcoming events', href: SITE.instagramUrl },
+	},
+] as const
+---
+
+<BaseLayout title={SITE.name} description={SITE.description} image={cta} imageAlt="The Flair Entertainment team">
+	<section class="hero" aria-label="Showreel">
+		<FittedVideo src="/video/hero.mp4" poster={heroPoster} width={1920} height={1080} label="Flair Entertainment showreel" mode="ambient" />
+	</section>
+
+	<section class="intro section">
+		<div class="press">
+			<p class="eyebrow">As featured in</p>
+			<ul>{PRESS.map((name) => <li>{name}</li>)}</ul>
+		</div>
+		<h1 class="display">
+			Innovation,<br />collaboration<br /><span class="script">&amp; creation</span>
+		</h1>
+		<p class="lede">Creating the finest entertainment experiences for the island's most discerning corporate, charity and private events.</p>
+		<a class="button" href={ENQUIRE_HREF}>Enquire</a>
+	</section>
+
+	<section class="pillars section" aria-label="What we do">
+		{
+			PILLARS.map((pillar) => (
+				<article class="pillar">
+					<div class="frame">
+						<Image src={pillar.image} alt={pillar.alt} widths={[360, 540, 720, 960]} width={960} sizes="(max-width: 900px) 100vw, 33vw" class="media-cover" />
+					</div>
+					<h2 class="title">{pillar.title}</h2>
+					<p class="text">{pillar.text}</p>
+					{pillar.link ? (
+						<a class="link-underline" href={pillar.link.href}>{pillar.link.label}</a>
+					) : (
+						<p class="eyebrow soon">Coming soon</p>
+					)}
+				</article>
+			))
+		}
+	</section>
+
+	<LogoMarquee />
+
+	<section class="team section" aria-labelledby="team-heading">
+		<div class="team-head">
+			<h2 id="team-heading" class="display">Meet the <span class="script">team</span></h2>
+			<a class="link-underline" href="/about/">About Flair</a>
+		</div>
+		<ul class="team-grid">
+			{
+				TEAM.map((member) => (
+					<li>
+						<div class="frame">
+							<Image src={member.photo} alt={member.name} widths={[300, 480, 640]} width={640} sizes="(max-width: 700px) 50vw, 25vw" class="media-cover" />
+						</div>
+						<p class="name">{member.name}</p>
+						<p class="eyebrow">{member.role}</p>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section class="quote section" aria-labelledby="quote-heading">
+		<h2 id="quote-heading" class="eyebrow">What our clients think</h2>
+		<figure>
+			<blockquote>
+				<p>
+					“Working with Megan on our Christmas event was a real pleasure. She was super professional, completely understood what we were after,
+					then delivered it perfectly. The entertainment was such a hit, that it had passers-by stopping in the street to watch. We couldn't have
+					asked for more!”
+				</p>
+			</blockquote>
+			<figcaption class="eyebrow">Hettich · Jersey</figcaption>
+		</figure>
+	</section>
+
+	<section class="together on-dark" aria-labelledby="together-heading">
+		<Image src={cta} alt="" widths={[800, 1280, 1920]} width={1920} sizes="100vw" class="media-cover" />
+		<div class="together-copy section">
+			<p class="eyebrow">Working together</p>
+			<h2 id="together-heading" class="display">Ready to create something <span class="script">unforgettable?</span></h2>
+			<div class="actions">
+				<a class="button" href={ENQUIRE_HREF}>Booking enquiry</a>
+				<a class="button" href={CAREERS_HREF}>Performer enquiry</a>
+			</div>
+		</div>
+	</section>
+
+	<div class="spacer" aria-hidden="true"></div>
+	<InstagramSection />
+</BaseLayout>
+
+<style>
+	.hero {
+		padding: 0 var(--gutter);
+	}
+
+	.intro {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 36px;
+		padding-block: 96px 120px;
+		text-align: center;
+	}
+
+	.press {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 18px;
+		margin-bottom: 40px;
+	}
+
+	.press ul {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 12px 40px;
+		font: 600 10px/1.6 var(--font-sans);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		color: var(--ink);
+	}
+
+	.intro .script {
+		margin-left: 0;
+		padding-bottom: 0;
+	}
+
+	.pillars {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 64px 32px;
+		padding-bottom: 160px;
+	}
+
+	.pillar {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+	}
+
+	.frame {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		background: var(--sand);
+	}
+
+	.pillar .frame {
+		margin-bottom: 12px;
+	}
+
+	.text {
+		font: 400 14px/1.8 var(--font-sans);
+		color: var(--muted);
+	}
+
+	.soon {
+		padding-bottom: 8px;
+	}
+
+	.team {
+		display: flex;
+		flex-direction: column;
+		gap: 56px;
+		padding-block: 140px;
+	}
+
+	.team-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 24px;
+	}
+
+	.team-head .link-underline {
+		margin-bottom: 28px;
+	}
+
+	.team-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 32px;
+	}
+
+	.team-grid li {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.team-grid .frame {
+		margin-bottom: 12px;
+	}
+
+	.name {
+		font: 300 18px/1.3 var(--font-sans);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.quote {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 40px;
+		padding-bottom: 160px;
+		text-align: center;
+	}
+
+	.quote figure {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 32px;
+		max-width: 880px;
+	}
+
+	blockquote {
+		font: 300 clamp(18px, 2.2vw, 24px) / 1.7 var(--font-sans);
+	}
+
+	.together {
+		position: relative;
+		overflow: hidden;
+		background: var(--ink);
+		color: var(--cream);
+	}
+
+	.together > :global(img) {
+		opacity: 0.38;
+	}
+
+	.together-copy {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 28px;
+		padding-block: 160px;
+		text-align: center;
+	}
+
+	.together .eyebrow {
+		color: var(--cream);
+		opacity: 0.7;
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 16px;
+	}
+
+	.spacer {
+		height: 140px;
+	}
+
+	@media (max-width: 900px) {
+		.pillars {
+			grid-template-columns: minmax(0, 1fr);
+			padding-bottom: 112px;
+		}
+
+		.team-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 32px 16px;
+		}
+	}
+
+	@media (max-width: 700px) {
+		.intro {
+			gap: 28px;
+			padding-block: 64px 88px;
+		}
+
+		.team {
+			padding-block: 96px;
+		}
+
+		.together-copy {
+			padding-block: 112px;
+		}
+
+		.spacer {
+			height: 96px;
+		}
+	}
+</style>

@@ -1,0 +1,85 @@
+---
+import { Image } from 'astro:assets'
+import type { CaseStudy } from '@/data/studies'
+
+interface Props {
+	study: CaseStudy
+	/** Heading level, so the card fits the outline of the page it sits on. */
+	level?: 'h2' | 'h3'
+	eager?: boolean
+}
+
+const { study, level: Heading = 'h2', eager = false } = Astro.props
+---
+
+<a href={`/entertainment/${study.slug}/`} class="card">
+	<div class="frame">
+		<Image
+			src={study.cover}
+			alt={study.coverAlt}
+			widths={[360, 540, 720, 960]} width={960}
+			sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+			class="media-cover"
+			loading={eager ? 'eager' : 'lazy'}
+		/>
+		<div class="veil" aria-hidden="true"><span>View</span></div>
+	</div>
+	<div class="caption">
+		<Heading class="title">{study.title}</Heading>
+		<p class="eyebrow">{study.subtitle}</p>
+	</div>
+</a>
+
+<style>
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: 28px;
+		color: var(--ink);
+	}
+
+	.card:hover {
+		opacity: 1;
+	}
+
+	.frame {
+		position: relative;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		background: var(--sand);
+	}
+
+	.veil {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: flex-end;
+		justify-content: flex-end;
+		padding: 28px;
+		background: rgba(26, 26, 26, 0);
+		transition: background 0.6s ease;
+	}
+
+	.veil span {
+		font: 600 10px/1 var(--font-sans);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		color: var(--paper);
+		opacity: 0.9;
+	}
+
+	.card:hover .veil,
+	.card:focus-visible .veil {
+		background: rgba(26, 26, 26, 0.18);
+	}
+
+	.caption {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+
+	.caption .eyebrow {
+		letter-spacing: 0.3em;
+	}
+</style>

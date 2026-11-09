@@ -1,0 +1,159 @@
+---
+import { Image } from 'astro:assets'
+import logoLight from '@/assets/brand/logo-light.png'
+import { CAREERS_HREF, ENQUIRE_HREF, FORM_ACTIONS, PRIMARY_NAV, SITE } from '@/data/site'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="site-footer on-dark">
+	<div class="columns">
+		<nav class="column" aria-label="Footer">
+			<p class="label">Navigate</p>
+			{PRIMARY_NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+			<a href={ENQUIRE_HREF}>Enquire</a>
+			<a href={CAREERS_HREF}>Careers as a performer</a>
+		</nav>
+		<div class="column">
+			<p class="label" id="newsletter-label">Stay in the loop</p>
+			<form class="signup" action={FORM_ACTIONS.newsletter} method="post" enctype="text/plain" aria-labelledby="newsletter-label">
+				<label class="visually-hidden" for="newsletter-email">Email address</label>
+				<input id="newsletter-email" name="email" type="email" placeholder="Email address" autocomplete="email" required />
+				<button type="submit">Sign up</button>
+			</form>
+			<p class="note">We respect your privacy.</p>
+		</div>
+		<div class="column">
+			<p class="label">Follow us</p>
+			<a href={SITE.instagramUrl} rel="me noopener">Instagram</a>
+			<a href={SITE.facebookUrl} rel="me noopener">Facebook</a>
+			<a class="email" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+			<a class="phone" href={`tel:${SITE.phoneE164}`}>{SITE.phoneDisplay}</a>
+		</div>
+	</div>
+	<div class="base">
+		<Image src={logoLight} alt="" height={72} densities={[1, 2]} class="mark" />
+		<p class="legal">
+			Based in Jersey, Channel Islands · Working across the islands and the UK<br />
+			Copyright {year} {SITE.name}. All rights reserved.
+		</p>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		display: flex;
+		flex-direction: column;
+		gap: 72px;
+		padding: 96px var(--gutter) 40px;
+		background: var(--ink);
+		color: var(--cream);
+	}
+
+	.site-footer a {
+		color: var(--cream);
+	}
+
+	.columns {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 64px;
+	}
+
+	.column {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+		font: 500 11px/1 var(--font-sans);
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
+	}
+
+	.label {
+		opacity: 0.5;
+	}
+
+	.signup {
+		display: flex;
+		align-self: stretch;
+		justify-content: space-between;
+		gap: 16px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(242, 237, 233, 0.5);
+	}
+
+	.signup input {
+		flex: 1;
+		min-width: 0;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: var(--cream);
+		font: 400 13px/1 var(--font-sans);
+		letter-spacing: 0;
+		text-transform: none;
+	}
+
+	.signup input::placeholder {
+		color: var(--cream);
+		opacity: 0.5;
+	}
+
+	.signup input:focus {
+		outline: none;
+	}
+
+	.signup:focus-within {
+		border-bottom-color: var(--cream);
+	}
+
+	.signup button {
+		padding: 0;
+		border: 0;
+		background: none;
+		color: var(--cream);
+		font: 600 10px/1 var(--font-sans);
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
+		cursor: pointer;
+	}
+
+	.note {
+		font: 400 11px/1.6 var(--font-sans);
+		letter-spacing: 0;
+		text-transform: none;
+		opacity: 0.5;
+	}
+
+	.email {
+		margin-top: 8px;
+		letter-spacing: 0.04em;
+		text-transform: none;
+	}
+
+	.phone {
+		letter-spacing: 0.12em;
+	}
+
+	.base {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 28px;
+		text-align: center;
+	}
+
+	.mark {
+		width: auto;
+		height: 72px;
+		opacity: 0.9;
+	}
+
+	.legal {
+		font: 400 11px/1.8 var(--font-sans);
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		opacity: 0.5;
+	}
+</style>

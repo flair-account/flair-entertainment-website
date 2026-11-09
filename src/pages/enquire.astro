@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { FORM_ACTIONS, SITE } from '@/data/site'
+import verticalLogo from '@/assets/brand/vertical-logo.webp'
+
+const site = Astro.site ?? new URL('https://flairentertainment.je')
+const contactPage = {
+	'@type': 'ContactPage',
+	url: new URL('/enquire/', site).href,
+	about: { '@id': `${site.href}#organization` },
+}
+---
+
+<BaseLayout
+	title="Enquire"
+	description="Request a proposal from Flair Entertainment. Tell us about your private celebration, corporate event or production and we will tailor entertainment around it."
+	schema={[contactPage]}
+>
+	<section class="intro section">
+		<p class="eyebrow">Request a proposal</p>
+		<h1 class="display">Want <span class="script">us</span> to bring your vision to life?</h1>
+		<div class="lede">
+			<p>Tell us what you're planning and we'll tailor something around your idea.</p>
+			<p>
+				Whether it's a private celebration, a corporate event or a full production show, every proposal is made to measure and built specifically for
+				your event, your venue and your guests.
+			</p>
+			<p>
+				Fill in a few details and we'll come back to you with options, availability and pricing. You can also email
+				<a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+			</p>
+		</div>
+	</section>
+
+	<section class="enquiry section" aria-label="Enquiry form">
+		<form class="form" action={FORM_ACTIONS.enquiry} method="post" enctype="text/plain">
+			<div class="field">
+				<label for="first-name">First name</label>
+				<input id="first-name" name="first-name" autocomplete="given-name" required />
+			</div>
+			<div class="field">
+				<label for="last-name">Last name</label>
+				<input id="last-name" name="last-name" autocomplete="family-name" required />
+			</div>
+			<div class="field">
+				<label for="email">Email</label>
+				<input id="email" name="email" type="email" autocomplete="email" required />
+			</div>
+			<div class="field">
+				<label for="event-date">Event date <span class="optional">(optional)</span></label>
+				<input id="event-date" name="event-date" type="date" />
+			</div>
+			<div class="field field-wide">
+				<label for="message">Tell us about your event</label>
+				<textarea id="message" name="message" required></textarea>
+			</div>
+			<button class="button" type="submit">Send enquiry</button>
+		</form>
+	</section>
+
+	<div class="mark">
+		<Image src={verticalLogo} alt="" height={160} densities={[1, 2]} />
+	</div>
+</BaseLayout>
+
+<style>
+	.intro {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 36px;
+		padding-block: 160px 96px;
+		text-align: center;
+	}
+
+	.intro .display {
+		max-width: 900px;
+	}
+
+	.intro .lede {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		max-width: 640px;
+	}
+
+	.intro .lede a {
+		border-bottom: 1px solid currentColor;
+		color: var(--ink);
+	}
+
+	.enquiry {
+		max-width: calc(800px + 2 * var(--gutter));
+		margin-inline: auto;
+		padding-bottom: 140px;
+	}
+
+	.mark {
+		display: flex;
+		justify-content: center;
+		padding-bottom: 140px;
+	}
+
+	.mark img {
+		width: auto;
+		height: 160px;
+	}
+
+	@media (max-width: 700px) {
+		.intro {
+			gap: 24px;
+			padding-block: 72px 56px;
+		}
+
+		.enquiry,
+		.mark {
+			padding-bottom: 96px;
+		}
+
+		.mark img {
+			height: 112px;
+		}
+	}
+</style>

@@ -1,0 +1,79 @@
+---
+import { getImage } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+import { SITE } from '@/data/site'
+import defaultShare from '@/assets/home/cta.webp'
+import logo from '@/assets/brand/logo.png'
+
+export interface SeoProps {
+	title: string
+	description: string
+	/** Share image; falls back to the brand photograph. */
+	image?: ImageMetadata
+	imageAlt?: string
+	type?: 'website' | 'article'
+	/** Extra JSON-LD nodes for this page, merged into the site graph. */
+	schema?: readonly Record<string, unknown>[]
+	noindex?: boolean
+}
+
+const { title, description, image = defaultShare, imageAlt, type = 'website', schema = [], noindex = false } =
+	Astro.props as SeoProps
+
+const site = Astro.site ?? new URL('https://flairentertainment.je')
+const canonical = new URL(Astro.url.pathname, site).href
+const fullTitle = title === SITE.name ? `${SITE.name} | ${SITE.tagline}` : `${title} | ${SITE.name}`
+const share = await getImage({ src: image, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 80 })
+const shareUrl = new URL(share.src, site).href
+const logoImage = await getImage({ src: logo, width: 600, format: 'png' })
+
+const organization = {
+	'@type': ['Organization', 'EntertainmentBusiness'],
+	'@id': `${site.href}#organization`,
+	name: SITE.name,
+	url: site.href,
+	logo: new URL(logoImage.src, site).href,
+	image: shareUrl,
+	description: SITE.description,
+	email: SITE.email,
+	telephone: SITE.phoneE164,
+	address: { '@type': 'PostalAddress', addressRegion: 'Jersey', addressCountry: 'JE' },
+	areaServed: ['Jersey', 'Guernsey', 'United Kingdom'],
+	sameAs: [SITE.instagramUrl, SITE.facebookUrl],
+}
+
+const webSite = {
+	'@type': 'WebSite',
+	'@id': `${site.href}#website`,
+	url: site.href,
+	name: SITE.name,
+	inLanguage: SITE.lang,
+	publisher: { '@id': `${site.href}#organization` },
+}
+
+const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': [organization, webSite, ...schema] })
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content={SITE.locale} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={shareUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt ?? SITE.name} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={shareUrl} />
+<meta name="twitter:image:alt" content={imageAlt ?? SITE.name} />
+
+<script type="application/ld+json" is:inline set:html={jsonLd} />

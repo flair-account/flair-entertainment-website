@@ -1,0 +1,36 @@
+---
+import '@/styles/global.css'
+import Seo from '@/components/Seo.astro'
+import type { SeoProps } from '@/components/Seo.astro'
+import SiteHeader from '@/components/SiteHeader.astro'
+import SiteFooter from '@/components/SiteFooter.astro'
+import { SITE } from '@/data/site'
+
+type Props = SeoProps
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preload" href="/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/eyesome-script.woff2" as="font" type="font/woff2" crossorigin />
+		<Seo {...Astro.props} />
+		<link rel="icon" href="/favicon.ico" sizes="48x48" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<meta name="theme-color" content={SITE.themeColor} />
+		<meta name="format-detection" content="telephone=no" />
+		<slot name="head" />
+	</head>
+	<body>
+		<a class="skip-link" href="#main">Skip to content</a>
+		<SiteHeader />
+		<main id="main">
+			<slot />
+		</main>
+		<SiteFooter />
+	</body>
+</html>
