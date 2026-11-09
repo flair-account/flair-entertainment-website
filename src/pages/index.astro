@@ -60,7 +60,7 @@ const PILLARS = [
 			PILLARS.map((pillar) => (
 				<article class="pillar">
 					<div class="frame">
-						<Image src={pillar.image} alt={pillar.alt} widths={[360, 540, 720, 960]} width={960} sizes="(max-width: 900px) 100vw, 33vw" class="media-cover" />
+						<Image src={pillar.image} alt={pillar.alt} widths={[360, 540, 720, 960]} width={960} quality={70} sizes="(max-width: 900px) 100vw, 33vw" class="media-cover" />
 					</div>
 					<h2 class="title">{pillar.title}</h2>
 					<p class="text">{pillar.text}</p>
@@ -86,7 +86,7 @@ const PILLARS = [
 				TEAM.map((member) => (
 					<li>
 						<div class="frame">
-							<Image src={member.photo} alt={member.name} widths={[300, 480, 640]} width={640} sizes="(max-width: 700px) 50vw, 25vw" class="media-cover" />
+							<Image src={member.photo} alt={member.name} widths={[300, 480, 640]} width={640} quality={70} sizes="(max-width: 700px) 50vw, 25vw" class="media-cover" />
 						</div>
 						<p class="name">{member.name}</p>
 						<p class="eyebrow">{member.role}</p>
@@ -111,7 +111,7 @@ const PILLARS = [
 	</section>
 
 	<section class="together on-dark" aria-labelledby="together-heading">
-		<Image src={cta} alt="" widths={[800, 1280, 1920]} width={1920} sizes="100vw" class="media-cover" />
+		<Image src={cta} alt="" widths={[800, 1280, 1920]} width={1920} quality={70} sizes="100vw" class="media-cover" />
 		<div class="together-copy section">
 			<p class="eyebrow">Working together</p>
 			<h2 id="together-heading" class="display">Ready to create something <span class="script">unforgettable?</span></h2>

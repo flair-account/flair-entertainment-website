@@ -72,7 +72,7 @@ const aboutPage = {
 						<Image
 							src={member.photo}
 							alt={member.name}
-							widths={[320, 480, 640]} width={640}
+							widths={[320, 480, 640]} width={640} quality={70}
 							sizes="(max-width: 700px) 100vw, 320px"
 							loading={index === 0 ? 'eager' : 'lazy'}
 						/>
@@ -89,7 +89,7 @@ const aboutPage = {
 
 	<section class="culture section" aria-labelledby="culture-heading">
 		<div class="culture-image">
-			<Image src={culture} alt="The Flair team lifting a performer in celebration, in black and white" widths={[480, 720, 960]} width={960} sizes="(max-width: 900px) 100vw, 45vw" />
+			<Image src={culture} alt="The Flair team lifting a performer in celebration, in black and white" widths={[480, 720, 960]} width={960} quality={70} sizes="(max-width: 900px) 100vw, 45vw" />
 		</div>
 		<div class="culture-copy">
 			<h2 id="culture-heading" class="display">Company <span class="script">culture</span></h2>

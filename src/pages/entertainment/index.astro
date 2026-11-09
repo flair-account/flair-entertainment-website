@@ -34,7 +34,7 @@ const collection = {
 	</section>
 
 	<section class="studies section" aria-label="Case studies">
-		{CASE_STUDIES.map((study, index) => <StudyCard study={study} eager={index < 3} />)}
+		{CASE_STUDIES.map((study, index) => <StudyCard study={study} eager={index < 3} priority={index === 0} />)}
 	</section>
 
 	<InstagramSection />

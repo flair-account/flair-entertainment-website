@@ -129,7 +129,7 @@ const careersPage = {
 			{
 				BEHIND_THE_CURTAIN.map((item) => (
 					<li class:list={{ tall: item.tall }}>
-						<Image src={item.image} alt={item.alt} widths={[360, 540, 800]} width={800} sizes="(max-width: 700px) 100vw, 33vw" class="media-cover" />
+						<Image src={item.image} alt={item.alt} widths={[360, 540, 800]} width={800} quality={70} sizes="(max-width: 700px) 100vw, 33vw" class="media-cover" />
 					</li>
 				))
 			}

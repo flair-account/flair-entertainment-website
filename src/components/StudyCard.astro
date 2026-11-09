@@ -7,9 +7,11 @@ interface Props {
 	/** Heading level, so the card fits the outline of the page it sits on. */
 	level?: 'h2' | 'h3'
 	eager?: boolean
+	/** The first card is the page's largest paint on phones, so it is fetched ahead of the rest. */
+	priority?: boolean
 }
 
-const { study, level: Heading = 'h2', eager = false } = Astro.props
+const { study, level: Heading = 'h2', eager = false, priority = false } = Astro.props
 ---
 
 <a href={`/entertainment/${study.slug}/`} class="card">
@@ -17,10 +19,11 @@ const { study, level: Heading = 'h2', eager = false } = Astro.props
 		<Image
 			src={study.cover}
 			alt={study.coverAlt}
-			widths={[360, 540, 720, 960]} width={960}
+			widths={[360, 540, 720, 960]} width={960} quality={70}
 			sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
 			class="media-cover"
 			loading={eager ? 'eager' : 'lazy'}
+			fetchpriority={priority ? 'high' : undefined}
 		/>
 		<div class="veil" aria-hidden="true"><span>View</span></div>
 	</div>

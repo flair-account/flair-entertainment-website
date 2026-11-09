@@ -47,7 +47,7 @@ const breadcrumbs = {
 							<Image
 								src={study.heroImage ?? study.cover}
 								alt={study.coverAlt}
-								widths={[480, 720, 960]} width={960}
+								widths={[480, 720, 960]} width={960} quality={70}
 								sizes="(max-width: 900px) 100vw, 45vw"
 								loading="eager"
 								fetchpriority="high"
@@ -73,7 +73,7 @@ const breadcrumbs = {
 						<Image
 							src={item.image}
 							alt={item.alt}
-							widths={[400, 640, 960]} width={960}
+							widths={[400, 640, 960]} width={960} quality={70}
 							sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
 						/>
 					</figure>
