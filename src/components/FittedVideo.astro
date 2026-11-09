@@ -6,9 +6,22 @@ import { getThumbHashDataUrl } from '@/lib/getThumbHashDataUrl'
 /** Candidate poster widths; the largest that fits the source is always included. */
 const POSTER_WIDTHS = [480, 720, 1080, 1440, 1920]
 
-interface Props {
+export interface VideoSource {
 	/** Path under `public/`. */
 	src: string
+	/** MIME type with codecs, so the browser skips a rendition it cannot decode without fetching it. */
+	type: string
+	/** Media query that limits the rendition to matching screens, such as phones. */
+	media?: string
+}
+
+interface Props {
+	/** Path under `public/`; an H.264 MP4 every browser can play, tried after `sources`. */
+	src: string
+	/** Lighter or smaller renditions, in order of preference, tried before `src`. */
+	sources?: readonly VideoSource[]
+	/** Whether the film has a soundtrack worth offering; without one only the pause control shows. */
+	sound?: boolean
 	poster: ImageMetadata
 	width: number
 	height: number
@@ -27,6 +40,8 @@ interface Props {
 
 const {
 	src,
+	sources = [],
+	sound = true,
 	poster,
 	width,
 	height,
@@ -64,7 +79,7 @@ const style = [
 		fetchpriority="high"
 	/>
 	<video
-		src={src}
+		src={sources.length ? undefined : src}
 		width={width}
 		height={height}
 		autoplay
@@ -74,7 +89,10 @@ const style = [
 		disablepictureinpicture
 		preload="auto"
 		aria-label={label}
-	></video>
+	>
+		{sources.map((source) => <source src={source.src} type={source.type} media={source.media} />)}
+		{sources.length > 0 && <source src={src} type="video/mp4" />}
+	</video>
 	{/* Runs as soon as the video is parsed: shows it only once frames arrive, so the poster never flashes black, and stops autoplay for visitors who asked for less motion. */}
 	<script is:inline>
 		;(() => {
@@ -89,7 +107,7 @@ const style = [
 	</script>
 	{
 		isFeature && (
-			<div class="controls">
+			<div class:list={['controls', { 'is-silent': !sound }]}>
 				<button type="button" class="control toggle" data-toggle aria-label="Pause video">
 					<svg class="icon icon-pause" viewBox="0 0 24 24" aria-hidden="true">
 						<path d="M9 6.5v11M15 6.5v11" />
@@ -98,17 +116,19 @@ const style = [
 						<path d="M8.5 6.2v11.6L18 12z" />
 					</svg>
 				</button>
-				<button type="button" class="control sound" data-sound aria-label="Sound" aria-pressed="false">
-					<svg class="ring" viewBox="0 0 48 48" aria-hidden="true">
-						<circle class="track" cx="24" cy="24" r="23" pathLength="1" />
-						<circle class="progress" cx="24" cy="24" r="23" pathLength="1" data-ring />
-					</svg>
-					<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-						<path d="M4.5 9.5h3l4.5-4v13l-4.5-4h-3z" />
-						<path class="muted-mark" d="M16 9.5l5 5M21 9.5l-5 5" />
-						<path class="waves" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.2 6.5a7.8 7.8 0 0 1 0 11" />
-					</svg>
-				</button>
+				{sound && (
+					<button type="button" class="control sound" data-sound aria-label="Sound" aria-pressed="false">
+						<svg class="ring" viewBox="0 0 48 48" aria-hidden="true">
+							<circle class="track" cx="24" cy="24" r="23" pathLength="1" />
+							<circle class="progress" cx="24" cy="24" r="23" pathLength="1" data-ring />
+						</svg>
+						<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+							<path d="M4.5 9.5h3l4.5-4v13l-4.5-4h-3z" />
+							<path class="muted-mark" d="M16 9.5l5 5M21 9.5l-5 5" />
+							<path class="waves" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.2 6.5a7.8 7.8 0 0 1 0 11" />
+						</svg>
+					</button>
+				)}
 			</div>
 		)
 	}
@@ -127,14 +147,16 @@ const style = [
 	const enhancePlayer = (root: HTMLElement): void => {
 		const video = root.querySelector('video')
 		const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')
+		// Both are absent on a film without a soundtrack, which keeps only the pause control.
 		const sound = root.querySelector<HTMLButtonElement>('[data-sound]')
 		const ring = root.querySelector<SVGCircleElement>('[data-ring]')
-		if (!video || !toggle || !sound || !ring) return
+		if (!video || !toggle) return
 
 		let pausedByVisitor = prefersReducedMotion
 		let frame = 0
 
 		const drawProgress = (): void => {
+			if (!ring) return
 			const progress = video.duration ? video.currentTime / video.duration : 0
 			ring.style.strokeDashoffset = String(1 - progress)
 			frame = video.paused ? 0 : requestAnimationFrame(drawProgress)
@@ -143,7 +165,7 @@ const style = [
 		const sync = (): void => {
 			root.dataset.state = video.paused ? 'paused' : 'playing'
 			toggle.setAttribute('aria-label', video.paused ? 'Play video' : 'Pause video')
-			sound.setAttribute('aria-pressed', String(!video.muted))
+			sound?.setAttribute('aria-pressed', String(!video.muted))
 			cancelAnimationFrame(frame)
 			drawProgress()
 		}
@@ -160,7 +182,7 @@ const style = [
 
 		toggle.addEventListener('click', togglePlayback)
 		video.addEventListener('click', togglePlayback)
-		sound.addEventListener('click', () => {
+		sound?.addEventListener('click', () => {
 			video.muted = !video.muted
 			if (video.muted || !video.paused) return
 			pausedByVisitor = false
@@ -300,9 +322,11 @@ const style = [
 		pointer-events: none;
 	}
 
+	/* Alone, the pause control stays visible: touch screens have no hover to reveal it. */
 	.fitted-video:hover .toggle,
 	.toggle:focus-visible,
-	[data-state='paused'] .toggle {
+	[data-state='paused'] .toggle,
+	.is-silent .toggle {
 		opacity: 1;
 		transform: none;
 		pointer-events: auto;

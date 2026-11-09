@@ -8,12 +8,21 @@ import InstagramSection from '@/components/InstagramSection.astro'
 import { CAREERS_HREF, ENQUIRE_HREF, SITE } from '@/data/site'
 import { PRESS } from '@/data/logos'
 import { TEAM } from '@/data/team'
-import heroPoster from '@/assets/video/hero-poster.webp'
+import heroPoster from '@/assets/video/flair-hero-poster.webp'
 import entertainment from '@/assets/home/entertainment.webp'
 import music from '@/assets/home/music.webp'
 import events from '@/assets/home/events.webp'
 import cta from '@/assets/home/cta.webp'
 import together from '@/assets/home/together.webp'
+import type { VideoSource } from '@/components/FittedVideo.astro'
+
+/** Phones get the 720p cut. Every browser takes VP9 WebM where it can, being the lighter file at the same quality. */
+const PHONE = '(max-width: 700px)'
+const HERO_SOURCES: readonly VideoSource[] = [
+	{ src: '/video/flair-hero-720.webm', type: 'video/webm; codecs="vp9"', media: PHONE },
+	{ src: '/video/flair-hero-720.mp4', type: 'video/mp4; codecs="avc1.64001F"', media: PHONE },
+	{ src: '/video/flair-hero-1080.webm', type: 'video/webm; codecs="vp9"' },
+]
 
 const PILLARS = [
 	{
@@ -42,7 +51,16 @@ const PILLARS = [
 
 <BaseLayout title={SITE.name} description={SITE.description} image={cta} imageAlt="The Flair Entertainment team" headerVariant="overlay">
 	<section class="hero" aria-label="Showreel">
-		<FittedVideo src="/video/hero.mp4" poster={heroPoster} width={1920} height={1080} label="Flair Entertainment showreel" fill />
+		<FittedVideo
+			src="/video/flair-hero-1080.mp4"
+			sources={HERO_SOURCES}
+			sound={false}
+			poster={heroPoster}
+			width={1920}
+			height={1080}
+			label="Flair Entertainment showreel"
+			fill
+		/>
 		<div class="scrim" aria-hidden="true"></div>
 		<div class="shade" aria-hidden="true"></div>
 		<div class="frame-line" aria-hidden="true"></div>
