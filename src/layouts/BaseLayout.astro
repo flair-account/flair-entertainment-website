@@ -56,7 +56,7 @@ const { headerVariant = 'default', ...seo } = Astro.props
 				{ threshold: WRITE_IN_THRESHOLD }
 			)
 
-			document.querySelectorAll('.display:has(.script)').forEach((heading) => observer.observe(heading))
+			document.querySelectorAll('.display:has(.script:not(.still, .still *))').forEach((heading) => observer.observe(heading))
 			document.querySelectorAll('.write-in').forEach((word) => word.parentElement && observer.observe(word.parentElement))
 		</script>
 	</body>

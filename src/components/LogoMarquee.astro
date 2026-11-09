@@ -38,6 +38,34 @@ const logos = CLIENT_LOGOS.map((logo) => ({ ...logo, height: getLogoHeight(logo)
 	</div>
 </section>
 
+<script>
+	/** How long the strip takes to glide to a stop under the pointer, and to pick up speed again. */
+	const EASE_MS = 900
+
+	document.querySelectorAll<HTMLElement>('.trusted .viewport').forEach((viewport) => {
+		// Absent when reduced motion turns the scroll off, which leaves nothing to slow down.
+		const animation = viewport.querySelector('.track')?.getAnimations()[0]
+		if (!animation) return
+		let frame = 0
+
+		const easeTo = (target: number): void => {
+			cancelAnimationFrame(frame)
+			const from = animation.playbackRate
+			const start = performance.now()
+			const step = (now: number): void => {
+				const progress = Math.min(1, (now - start) / EASE_MS)
+				const eased = 1 - (1 - progress) ** 3
+				animation.playbackRate = from + (target - from) * eased
+				if (progress < 1) frame = requestAnimationFrame(step)
+			}
+			frame = requestAnimationFrame(step)
+		}
+
+		viewport.addEventListener('pointerenter', (event) => event.pointerType === 'mouse' && easeTo(0))
+		viewport.addEventListener('pointerleave', (event) => event.pointerType === 'mouse' && easeTo(1))
+	})
+</script>
+
 <style>
 	.trusted {
 		display: flex;
@@ -72,8 +100,11 @@ const logos = CLIENT_LOGOS.map((logo) => ({ ...logo, height: getLogoHeight(logo)
 		width: auto;
 	}
 
-	.viewport:hover .track {
-		animation-play-state: paused;
+	/* Without script the strip simply stops under the pointer; with it, it eases to a halt instead. */
+	@media (scripting: none) {
+		.viewport:hover .track {
+			animation-play-state: paused;
+		}
 	}
 
 	@keyframes scroll {

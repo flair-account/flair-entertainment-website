@@ -426,18 +426,23 @@ a:hover {
  * Script accents in headings, and any `.write-in` element, reveal left to right as if written the
  * first time each one scrolls into view (BaseLayout's observer adds `is-written`). Negative insets
  * keep the font's swashes, which reach outside the glyph box, from being clipped. `--write-delay`
- * lets a row of them write one after another.
+ * lets a row of them write one after another. `.still`, on a word or a section, opts out.
  */
 @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-	.display .script,
+	.display .script:not(.still, .still *),
 	.write-in {
 		clip-path: inset(-30% 100% -30% -10%);
 	}
 
-	.display .script.is-written,
+	.display .script.is-written:not(.still, .still *),
 	.write-in.is-written {
 		animation: write-in 1.5s var(--ease-in-out) var(--write-delay, 0.15s) both;
 	}
+}
+
+/* Call-to-action bands hold still: their buttons fill on hover without the sweep. */
+.still .button {
+	transition: none;
 }
 
 @keyframes write-in {
