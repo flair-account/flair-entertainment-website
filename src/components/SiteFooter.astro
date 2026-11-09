@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets'
 import logoLight from '@/assets/brand/logo-light.png'
-import { CAREERS_HREF, ENQUIRE_HREF, PRIMARY_NAV, SITE } from '@/data/site'
+import { CAREERS_HREF, COMPANY, COMPANY_ADDRESS, ENQUIRE_HREF, PRIMARY_NAV, PRIVACY_HREF, SITE } from '@/data/site'
 
 const year = new Date().getFullYear()
 ---
@@ -9,11 +9,17 @@ const year = new Date().getFullYear()
 <footer class="site-footer on-dark">
 	<div class="identity">
 		<Image src={logoLight} alt="" height={64} densities={[1, 2]} class="mark" />
-		<p class="legal">
-			Based in Jersey, Channel Islands<br />
-			Working across the islands and the UK<br />
-			Copyright {year} {SITE.name}. All rights reserved.
-		</p>
+		<div class="details">
+			<p class="legal">
+				Based in Jersey, Channel Islands<br />
+				Working across the islands and the UK<br />
+				Copyright {year} {COMPANY.legalName}. All rights reserved.
+			</p>
+			<p class="company">
+				{COMPANY.legalName}, registered in {COMPANY.jurisdiction}, company no.&nbsp;{COMPANY.registrationNumber}. Registered office: {COMPANY_ADDRESS}.
+			</p>
+			<a class="draw-link privacy" href={PRIVACY_HREF}>Privacy policy</a>
+		</div>
 	</div>
 	<nav class="column" aria-label="Footer">
 		<p class="label">Navigate</p>
@@ -46,11 +52,11 @@ const year = new Date().getFullYear()
 		color: var(--cream);
 	}
 
+	/* The mark sits beside the legal lines rather than above them, which keeps the footer short. */
 	.identity {
 		display: flex;
-		flex-direction: column;
 		align-items: flex-start;
-		gap: 24px;
+		gap: 32px;
 	}
 
 	.mark {
@@ -64,6 +70,27 @@ const year = new Date().getFullYear()
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		opacity: 0.5;
+	}
+
+	.details {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+	}
+
+	/* Mixed case and tight tracking so the long registered office line stays short enough to read. */
+	.company {
+		max-width: 400px;
+		font: 400 12px/1.7 var(--font-sans);
+		letter-spacing: 0.02em;
+		opacity: 0.5;
+	}
+
+	.privacy {
+		font: 500 11px/1 var(--font-sans);
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
 	}
 
 	.column {
@@ -98,8 +125,6 @@ const year = new Date().getFullYear()
 
 		.identity {
 			grid-column: 1 / -1;
-			flex-direction: row;
-			align-items: center;
 		}
 	}
 

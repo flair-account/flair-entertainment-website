@@ -31,6 +31,20 @@ export const PRIMARY_NAV: readonly NavItem[] = [
 
 export const ENQUIRE_HREF = '/enquire/'
 export const CAREERS_HREF = '/careers/'
+export const PRIVACY_HREF = '/privacy/'
+
+/** The legal entity behind the brand, as entered in the Jersey Financial Services Commission's companies registry. */
+export const COMPANY = {
+	legalName: 'Flair Entertainment Limited',
+	registrationNumber: '148408',
+	jurisdiction: 'Jersey',
+	streetAddress: '5 La Ville Vautier, Rue des Cosnets',
+	locality: 'St Ouen',
+	postalCode: 'JE3 2WF',
+	countryCode: 'JE',
+} as const
+
+export const COMPANY_ADDRESS = `${COMPANY.streetAddress}, ${COMPANY.locality}, ${COMPANY.jurisdiction} ${COMPANY.postalCode}`
 
 /**
  * Netlify Forms names. Netlify finds the forms in the built HTML at deploy and files submissions

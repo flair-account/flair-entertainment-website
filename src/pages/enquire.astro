@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import NetlifyFormFields from '@/components/NetlifyFormFields.astro'
-import { FORM_NAMES, FORM_SUCCESS_HREF, HONEYPOT_FIELD, SITE } from '@/data/site'
+import { FORM_NAMES, FORM_SUCCESS_HREF, HONEYPOT_FIELD, PRIVACY_HREF, SITE } from '@/data/site'
 import verticalLogo from '@/assets/brand/vertical-logo.webp'
 
 const site = Astro.site ?? new URL('https://flairentertainment.je')
@@ -64,6 +64,7 @@ const contactPage = {
 				<label for="message">Tell us about your event</label>
 				<textarea id="message" name="message" required></textarea>
 			</div>
+			<p class="form-note">We use these details only to reply to your enquiry. Read how we look after them in our <a href={PRIVACY_HREF}>privacy policy</a>.</p>
 			<button class="button" type="submit">Send enquiry</button>
 		</form>
 	</section>

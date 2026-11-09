@@ -1,0 +1,229 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { CAREERS_HREF, COMPANY, COMPANY_ADDRESS, ENQUIRE_HREF, SITE } from '@/data/site'
+
+/** Shown at the top of the policy; change it whenever the wording below changes. */
+const LAST_UPDATED = '9 November 2026'
+
+const site = Astro.site ?? new URL('https://flairentertainment.je')
+const privacyPage = {
+	'@type': 'WebPage',
+	name: 'Privacy policy',
+	url: new URL('/privacy/', site).href,
+	about: { '@id': `${site.href}#organization` },
+}
+---
+
+<BaseLayout
+	title="Privacy Policy"
+	description="How Flair Entertainment Limited collects, uses and protects the personal data you send through this website, and your rights under the Data Protection (Jersey) Law 2018."
+	schema={[privacyPage]}
+>
+	<section class="intro section">
+		<p class="eyebrow">Legal</p>
+		<h1 class="display">Privacy <span class="script still">policy</span></h1>
+		<div class="lede">
+			<p>How we look after the details you share with us.</p>
+			<p>Last updated {LAST_UPDATED}</p>
+		</div>
+	</section>
+
+	<article class="policy section">
+		<section>
+			<h2 class="title">Who we are</h2>
+			<div class="prose">
+				<p>
+					This website is run by {COMPANY.legalName}, a private company registered in {COMPANY.jurisdiction} under company number
+					{COMPANY.registrationNumber}, with its registered office at {COMPANY_ADDRESS}. We trade as {SITE.name}.
+				</p>
+				<p>
+					We are the data controller for the personal data described here, which means we decide how and why it is used. We handle it in line with
+					the Data Protection (Jersey) Law 2018.
+				</p>
+				<p>
+					For any question about this policy or your data, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a> or write to us at our
+					registered office.
+				</p>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="title">What we collect and why</h2>
+			<div class="prose">
+				<p>We only collect what you choose to send us.</p>
+				<h3>Booking enquiries</h3>
+				<p>
+					When you use the <a href={ENQUIRE_HREF}>enquiry form</a> we receive your first and last name, your email address, your event date if you
+					give one, and your message. We use them to reply, to put a proposal together and, if you go ahead, to arrange and deliver your event. We
+					rely on the fact that you have asked us to take these steps before entering into a contract, and on our legitimate interest in answering
+					the people who contact us.
+				</p>
+				<h3>Performer applications</h3>
+				<p>
+					When you apply through the <a href={CAREERS_HREF}>careers form</a> we receive your name, email address, phone number, location, the
+					disciplines you tick, your training, genre and skills, your portfolio or showreel link, your social media handle and your message. We use
+					them to consider you for work and to contact you about it. We rely on our legitimate interest in finding performers, and on the steps you
+					have asked us to take before any engagement.
+				</p>
+				<h3>Emails and calls</h3>
+				<p>
+					If you email or phone us directly, we use your contact details and what you tell us to deal with your message, on the same basis as the
+					forms above.
+				</p>
+				<h3>Visiting the site</h3>
+				<p>
+					Like any web host, our hosting provider records technical details of each visit, such as your IP address, browser and the page requested,
+					so it can deliver the site and protect it from abuse. This is in our legitimate interest in running a secure website. We do not use these
+					records to identify you.
+				</p>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="title">Cookies and tracking</h2>
+			<div class="prose">
+				<p>
+					This website sets no cookies. It has no analytics, advertising or social media tracking, and it loads nothing from other companies'
+					servers: the fonts, images and video are served from our own host.
+				</p>
+				<p>
+					The only thing it keeps in your browser is a single flag in session storage that records that the site's fonts have loaded, so later pages
+					don't wait for them again. It holds no personal data, is never sent to us, and your browser deletes it when you close the tab.
+				</p>
+				<p>
+					Our Instagram and Facebook links take you to those services, whose own privacy policies apply once you are there.
+				</p>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="title">Who handles your data</h2>
+			<div class="prose">
+				<p>
+					This website is hosted by Netlify, Inc., a company based in the United States. Netlify stores the messages sent through our forms on our
+					behalf and passes them to us. Because of this, your details are processed outside Jersey. Netlify acts only on our instructions under its
+					data processing terms, which include contractual safeguards for international transfers.
+				</p>
+				<p>
+					Messages also reach our email provider so the team can read and answer them. Apart from these service providers, we share your details only
+					where you have asked us to or where the law requires it. We do not sell personal data.
+				</p>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="title">How long we keep it</h2>
+			<div class="prose">
+				<p>
+					We keep enquiries for up to two years after our last contact with you, so we can pick up where we left off if you come back to us. Where
+					an enquiry becomes a booking, we keep the records we need for as long as Jersey accounting and tax law requires.
+				</p>
+				<p>
+					We keep performer applications for up to twelve months so we can consider you for work that comes up. If you join our roster, we keep
+					your details for as long as we work together. You can ask us to delete an application sooner at any time.
+				</p>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="title">Your rights</h2>
+			<div class="prose">
+				<p>Under the Data Protection (Jersey) Law 2018 you have the right to:</p>
+				<ul>
+					<li>ask for a copy of the personal data we hold about you</li>
+					<li>have inaccurate or incomplete data corrected</li>
+					<li>have your data erased</li>
+					<li>restrict how we use your data</li>
+					<li>object to our use of your data where we rely on legitimate interests</li>
+					<li>receive data you gave us in a portable format, or have it sent to someone else</li>
+					<li>withdraw your consent at any time, where we rely on it</li>
+				</ul>
+				<p>
+					To use any of these rights, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. There is no charge. We may need to confirm who
+					you are before we act, and we will reply within four weeks, or tell you within that time if the law allows us longer because the request is
+					complex.
+				</p>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="title">Complaints</h2>
+			<div class="prose">
+				<p>
+					If you are unhappy with how we have handled your data, please tell us first so we can put it right. You also have the right to complain to
+					the Jersey Office of the Information Commissioner, the island's data protection regulator, at
+					<a href="https://jerseyoic.org" rel="noopener">jerseyoic.org</a>.
+				</p>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="title">Changes to this policy</h2>
+			<div class="prose">
+				<p>
+					We will update this page if the way we handle personal data changes. The date at the top shows when it was last revised.
+				</p>
+			</div>
+		</section>
+	</article>
+</BaseLayout>
+
+<style>
+	.intro {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 36px;
+		padding-block: 160px 96px;
+		text-align: center;
+	}
+
+	.policy {
+		display: flex;
+		flex-direction: column;
+		gap: 64px;
+		max-width: calc(720px + 2 * var(--gutter));
+		margin-inline: auto;
+		padding-bottom: 160px;
+	}
+
+	.policy section {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.policy h3 {
+		margin-top: 8px;
+		margin-bottom: -12px;
+		font: 600 10px/1.6 var(--font-sans);
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		color: var(--ink);
+	}
+
+	.policy ul {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding-left: 20px;
+		list-style: disc;
+	}
+
+	.policy a {
+		border-bottom: 1px solid currentColor;
+		color: var(--ink);
+	}
+
+	@media (max-width: 700px) {
+		.intro {
+			gap: 24px;
+			padding-block: 72px 56px;
+		}
+
+		.policy {
+			gap: 48px;
+			padding-bottom: 96px;
+		}
+	}
+</style>
