@@ -66,10 +66,10 @@ const breadcrumbs = {
 			</div>
 		</header>
 
-		<section class="gallery section" aria-label={`${study.headline} gallery`}>
+		<section class="gallery section reveal-row" aria-label={`${study.headline} gallery`}>
 			{
 				study.gallery.map((item) => (
-					<figure>
+					<figure class="reveal">
 						<Image
 							src={item.image}
 							alt={item.alt}
@@ -168,6 +168,16 @@ const breadcrumbs = {
 		grid-column: 2;
 		grid-row: 1 / span 3;
 		font: 300 32px/1 var(--font-sans);
+		transition: transform 0.5s var(--ease-out);
+	}
+
+	.next a:hover {
+		opacity: 1;
+	}
+
+	.next a:hover .arrow,
+	.next a:focus-visible .arrow {
+		transform: translateX(8px);
 	}
 
 	@media (max-width: 1100px) {

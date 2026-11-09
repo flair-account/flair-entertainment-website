@@ -6,6 +6,7 @@ interface Props {
 	study: CaseStudy
 	/** Heading level, so the card fits the outline of the page it sits on. */
 	level?: 'h2' | 'h3'
+	/** Loaded with the page, so it sits above the fold and skips the scroll reveal. */
 	eager?: boolean
 	/** The first card is the page's largest paint on phones, so it is fetched ahead of the rest. */
 	priority?: boolean
@@ -15,7 +16,7 @@ const { study, level: Heading = 'h2', eager = false, priority = false } = Astro.
 ---
 
 <a href={`/entertainment/${study.slug}/`} class="card">
-	<div class="frame">
+	<div class:list={['frame', { reveal: !eager }]}>
 		<Image
 			src={study.cover}
 			alt={study.coverAlt}
@@ -25,7 +26,7 @@ const { study, level: Heading = 'h2', eager = false, priority = false } = Astro.
 			loading={eager ? 'eager' : 'lazy'}
 			fetchpriority={priority ? 'high' : undefined}
 		/>
-		<div class="veil" aria-hidden="true"><span>View</span></div>
+		<div class="veil" aria-hidden="true"><span>View <span class="arrow">&rarr;</span></span></div>
 	</div>
 	<div class="caption">
 		<Heading class="title">{study.title}</Heading>
@@ -52,6 +53,15 @@ const { study, level: Heading = 'h2', eager = false, priority = false } = Astro.
 		background: var(--sand);
 	}
 
+	.frame :global(img) {
+		transition: transform 0.9s var(--ease-out);
+	}
+
+	.card:hover .frame :global(img),
+	.card:focus-visible .frame :global(img) {
+		transform: scale(1.04);
+	}
+
 	.veil {
 		position: absolute;
 		inset: 0;
@@ -63,12 +73,33 @@ const { study, level: Heading = 'h2', eager = false, priority = false } = Astro.
 		transition: background 0.6s ease;
 	}
 
-	.veil span {
+	.veil > span {
 		font: 600 10px/1 var(--font-sans);
 		letter-spacing: 0.3em;
 		text-transform: uppercase;
 		color: var(--paper);
-		opacity: 0.9;
+		opacity: 0;
+		transform: translateY(10px);
+		transition:
+			opacity 0.5s ease,
+			transform 0.6s var(--ease-out);
+	}
+
+	.veil .arrow {
+		display: inline-block;
+		margin-left: 6px;
+		transition: transform 0.5s var(--ease-out) 0.1s;
+	}
+
+	.card:hover .veil > span,
+	.card:focus-visible .veil > span {
+		opacity: 1;
+		transform: none;
+	}
+
+	.card:hover .veil .arrow,
+	.card:focus-visible .veil .arrow {
+		transform: translateX(4px);
 	}
 
 	.card:hover .veil,

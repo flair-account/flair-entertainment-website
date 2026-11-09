@@ -26,6 +26,8 @@
 	--header-h: 110px;
 	--font-sans: Montserrat, Helvetica, Arial, sans-serif;
 	--font-script: 'Eyesome Script', 'Brush Script MT', cursive;
+	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+	--ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 	color-scheme: light;
 }
 
@@ -165,38 +167,97 @@ a:hover {
 .link-underline {
 	display: inline-block;
 	padding-bottom: 8px;
-	border-bottom: 1px solid currentColor;
+	background: linear-gradient(currentColor, currentColor) no-repeat right bottom / 100% 1px;
 	font: 600 11px/1 var(--font-sans);
 	letter-spacing: 0.28em;
 	text-transform: uppercase;
 }
 
+@media (hover: hover) {
+	.link-underline:hover {
+		opacity: 1;
+		animation: underline-redraw 0.8s var(--ease-in-out);
+	}
+}
+
+@keyframes underline-redraw {
+	0% {
+		background-position: right bottom;
+		background-size: 100% 1px;
+	}
+	45% {
+		background-position: right bottom;
+		background-size: 0% 1px;
+	}
+	55% {
+		background-position: left bottom;
+		background-size: 0% 1px;
+	}
+	100% {
+		background-position: left bottom;
+		background-size: 100% 1px;
+	}
+}
+
+/* A 1px rule that draws in from the left on hover and stays drawn on the current page. */
+.draw-link {
+	position: relative;
+}
+
+.draw-link::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -6px;
+	height: 1px;
+	background: currentColor;
+	transform: scaleX(0);
+	transform-origin: right;
+	transition: transform 0.5s var(--ease-in-out);
+}
+
+.draw-link:hover {
+	opacity: 1;
+}
+
+.draw-link:hover::after,
+.draw-link[aria-current='page']::after {
+	transform: scaleX(1);
+	transform-origin: left;
+}
+
 .button {
+	--sweep: var(--ink);
+	--sweep-text: var(--paper);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	padding: 16px 28px;
 	border: 1px solid currentColor;
-	background: transparent;
+	background: linear-gradient(var(--sweep), var(--sweep)) no-repeat left center / 0% 100%;
 	color: inherit;
 	font: 600 11px/1 var(--font-sans);
 	letter-spacing: 0.28em;
 	text-transform: uppercase;
 	cursor: pointer;
 	transition:
-		background 0.3s ease,
-		color 0.3s ease;
+		background-size 0.5s var(--ease-in-out),
+		color 0.35s ease 0.08s,
+		border-color 0.35s ease;
 }
 
-.button:hover {
+.button:hover,
+.button:focus-visible {
 	opacity: 1;
-	background: var(--ink);
-	color: var(--paper);
+	background-size: 100% 100%;
+	border-color: var(--sweep);
+	color: var(--sweep-text);
 }
 
-.on-dark .button:hover {
-	background: var(--cream);
-	color: var(--ink);
+.on-dark .button {
+	--sweep: var(--cream);
+	--sweep-text: var(--ink);
 }
 
 .section {
@@ -340,5 +401,60 @@ a:hover {
 	.form {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 32px;
+	}
+}
+
+/*
+ * The script accent in a page's main heading reveals left to right as if written. Negative insets
+ * keep the font's swashes, which reach outside the glyph box, from being clipped.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	h1 .script {
+		animation: write-in 1.5s var(--ease-in-out) 0.25s both;
+	}
+}
+
+@keyframes write-in {
+	from {
+		clip-path: inset(-30% 100% -30% -10%);
+	}
+	to {
+		clip-path: inset(-30% -10% -30% -10%);
+	}
+}
+
+/*
+ * Imagery fades up as it scrolls into view, driven by the scroll position rather than script, so a
+ * browser without view timelines simply shows it in place. Text is left alone so it is never read,
+ * by people or contrast audits, at partial opacity.
+ */
+@supports (animation-timeline: view()) {
+	@media (prefers-reduced-motion: no-preference) {
+		.reveal {
+			animation: reveal linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 70%;
+		}
+
+		.reveal-row > :nth-child(3n + 2).reveal,
+		.reveal-row > :nth-child(3n + 2) .reveal {
+			animation-range: entry 8% entry 78%;
+		}
+
+		.reveal-row > :nth-child(3n + 3).reveal,
+		.reveal-row > :nth-child(3n + 3) .reveal {
+			animation-range: entry 16% entry 86%;
+		}
+	}
+}
+
+@keyframes reveal {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
 	}
 }

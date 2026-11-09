@@ -14,7 +14,7 @@ const isCurrent = (href: string): boolean => (href === '/' ? path === '/' : path
 	<nav class="nav nav-desktop" aria-label="Primary">
 		{
 			PRIMARY_NAV.map((item) => (
-				<a href={item.href} class:list={{ current: isCurrent(item.href) }} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+				<a href={item.href} class="draw-link" aria-current={isCurrent(item.href) ? 'page' : undefined}>
 					{item.label}
 				</a>
 			))
@@ -70,14 +70,54 @@ const isCurrent = (href: string): boolean => (href === '/' ? path === '/' : path
 		text-transform: uppercase;
 	}
 
-	.nav .current {
-		padding-bottom: 6px;
-		border-bottom: 1px solid var(--ink);
-	}
-
 	.nav-enquire {
+		--sweep: var(--ink);
 		padding: 16px 28px;
 		border: 1px solid var(--ink);
+		background: linear-gradient(var(--sweep), var(--sweep)) no-repeat left center / 0% 100%;
+		transition:
+			background-size 0.5s var(--ease-in-out),
+			color 0.35s ease 0.08s;
+	}
+
+	.nav-enquire:hover,
+	.nav-enquire[aria-current='page'] {
+		opacity: 1;
+		background-size: 100% 100%;
+		color: var(--paper);
+	}
+
+	/*
+	 * The header tightens over the first 120px of scroll. Driven by the scroll timeline, so it costs
+	 * no script; browsers without scroll timelines keep the roomy header.
+	 */
+	@supports (animation-timeline: scroll()) {
+		@media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
+			.site-header {
+				animation: header-compact linear both;
+				animation-timeline: scroll(root);
+				animation-range: 0 120px;
+			}
+
+			.brand img {
+				animation: logo-compact linear both;
+				animation-timeline: scroll(root);
+				animation-range: 0 120px;
+			}
+		}
+	}
+
+	@keyframes header-compact {
+		to {
+			padding-block: 14px;
+			box-shadow: 0 1px 0 rgba(26, 26, 26, 0.1);
+		}
+	}
+
+	@keyframes logo-compact {
+		to {
+			height: 40px;
+		}
 	}
 
 	.nav-mobile {

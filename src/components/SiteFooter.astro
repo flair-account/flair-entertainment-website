@@ -10,25 +10,25 @@ const year = new Date().getFullYear()
 	<div class="columns">
 		<nav class="column" aria-label="Footer">
 			<p class="label">Navigate</p>
-			{PRIMARY_NAV.map((item) => <a href={item.href}>{item.label}</a>)}
-			<a href={ENQUIRE_HREF}>Enquire</a>
-			<a href={CAREERS_HREF}>Careers as a performer</a>
+			{PRIMARY_NAV.map((item) => <a class="draw-link" href={item.href}>{item.label}</a>)}
+			<a class="draw-link" href={ENQUIRE_HREF}>Enquire</a>
+			<a class="draw-link" href={CAREERS_HREF}>Careers as a performer</a>
 		</nav>
 		<div class="column">
 			<p class="label" id="newsletter-label">Stay in the loop</p>
 			<form class="signup" action={FORM_ACTIONS.newsletter} method="post" enctype="text/plain" aria-labelledby="newsletter-label">
 				<label class="visually-hidden" for="newsletter-email">Email address</label>
 				<input id="newsletter-email" name="email" type="email" placeholder="Email address" autocomplete="email" required />
-				<button type="submit">Sign up</button>
+				<button type="submit">Sign up <span class="arrow" aria-hidden="true">&rarr;</span></button>
 			</form>
 			<p class="note">We respect your privacy.</p>
 		</div>
 		<div class="column">
 			<p class="label">Follow us</p>
-			<a href={SITE.instagramUrl} rel="me noopener">Instagram</a>
-			<a href={SITE.facebookUrl} rel="me noopener">Facebook</a>
-			<a class="email" href={`mailto:${SITE.email}`}>{SITE.email}</a>
-			<a class="phone" href={`tel:${SITE.phoneE164}`}>{SITE.phoneDisplay}</a>
+			<a class="draw-link" href={SITE.instagramUrl} rel="me noopener">Instagram</a>
+			<a class="draw-link" href={SITE.facebookUrl} rel="me noopener">Facebook</a>
+			<a class="draw-link email" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+			<a class="draw-link phone" href={`tel:${SITE.phoneE164}`}>{SITE.phoneDisplay}</a>
 		</div>
 	</div>
 	<div class="base">
@@ -81,6 +81,7 @@ const year = new Date().getFullYear()
 		gap: 16px;
 		padding-bottom: 12px;
 		border-bottom: 1px solid rgba(242, 237, 233, 0.5);
+		transition: border-color 0.4s ease;
 	}
 
 	.signup input {
@@ -117,6 +118,17 @@ const year = new Date().getFullYear()
 		letter-spacing: 0.28em;
 		text-transform: uppercase;
 		cursor: pointer;
+	}
+
+	.arrow {
+		display: inline-block;
+		margin-left: 6px;
+		transition: transform 0.4s var(--ease-out);
+	}
+
+	.signup button:hover .arrow,
+	.signup button:focus-visible .arrow {
+		transform: translateX(4px);
 	}
 
 	.note {

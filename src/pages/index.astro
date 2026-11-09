@@ -55,11 +55,11 @@ const PILLARS = [
 		<a class="button" href={ENQUIRE_HREF}>Enquire</a>
 	</section>
 
-	<section class="pillars section" aria-label="What we do">
+	<section class="pillars section reveal-row" aria-label="What we do">
 		{
 			PILLARS.map((pillar) => (
 				<article class="pillar">
-					<div class="frame">
+					<div class="frame reveal">
 						<Image src={pillar.image} alt={pillar.alt} widths={[360, 540, 720, 960]} width={960} quality={70} sizes="(max-width: 900px) 100vw, 33vw" class="media-cover" />
 					</div>
 					<h2 class="title">{pillar.title}</h2>
@@ -81,11 +81,11 @@ const PILLARS = [
 			<h2 id="team-heading" class="display">Meet the <span class="script">team</span></h2>
 			<a class="link-underline" href="/about/">About Flair</a>
 		</div>
-		<ul class="team-grid">
+		<ul class="team-grid reveal-row">
 			{
 				TEAM.map((member) => (
 					<li>
-						<div class="frame">
+						<div class="frame reveal">
 							<Image src={member.photo} alt={member.name} widths={[300, 480, 640]} width={640} quality={70} sizes="(max-width: 700px) 50vw, 25vw" class="media-cover" />
 						</div>
 						<p class="name">{member.name}</p>
@@ -188,6 +188,14 @@ const PILLARS = [
 
 	.pillar .frame {
 		margin-bottom: 12px;
+	}
+
+	.pillar .frame :global(img) {
+		transition: transform 0.9s var(--ease-out);
+	}
+
+	.pillar:hover .frame :global(img) {
+		transform: scale(1.04);
 	}
 
 	.text {
