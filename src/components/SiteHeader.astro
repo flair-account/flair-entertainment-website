@@ -57,7 +57,12 @@ const isCurrent = (href: string): boolean => (href === '/' ? path === '/' : path
 		padding: 28px var(--gutter);
 	}
 
-	.site-header a {
+	/*
+	 * Only the logo and plain links inherit the header colour. A broader `.site-header a` rule would
+	 * outrank the Enquire hover below and leave its label the same colour as the sweep behind it.
+	 */
+	.brand,
+	.nav a {
 		color: inherit;
 	}
 
@@ -83,6 +88,7 @@ const isCurrent = (href: string): boolean => (href === '/' ? path === '/' : path
 	.enquire {
 		--sweep: var(--ink);
 		--sweep-text: var(--paper);
+		color: inherit;
 		padding: 16px 28px;
 		border: 1px solid currentColor;
 		background: linear-gradient(var(--sweep), var(--sweep)) no-repeat left center / 0% 100%;
