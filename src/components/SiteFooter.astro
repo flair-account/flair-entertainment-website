@@ -7,36 +7,37 @@ const year = new Date().getFullYear()
 ---
 
 <footer class="site-footer on-dark">
-	<div class="columns">
-		<nav class="column" aria-label="Footer">
-			<p class="label">Navigate</p>
-			{PRIMARY_NAV.map((item) => <a class="draw-link" href={item.href}>{item.label}</a>)}
-			<a class="draw-link" href={ENQUIRE_HREF}>Enquire</a>
-			<a class="draw-link" href={CAREERS_HREF}>Careers as a performer</a>
-		</nav>
-		<div class="column">
-			<p class="label">Follow us</p>
-			<a class="draw-link" href={SITE.instagramUrl} rel="me noopener">Instagram</a>
-			<a class="draw-link" href={SITE.facebookUrl} rel="me noopener">Facebook</a>
-			<a class="draw-link email" href={`mailto:${SITE.email}`}>{SITE.email}</a>
-			<a class="draw-link phone" href={`tel:${SITE.phoneE164}`}>{SITE.phoneDisplay}</a>
-		</div>
-	</div>
-	<div class="base">
-		<Image src={logoLight} alt="" height={72} densities={[1, 2]} class="mark" />
+	<div class="identity">
+		<Image src={logoLight} alt="" height={64} densities={[1, 2]} class="mark" />
 		<p class="legal">
-			Based in Jersey, Channel Islands · Working across the islands and the UK<br />
+			Based in Jersey, Channel Islands<br />
+			Working across the islands and the UK<br />
 			Copyright {year} {SITE.name}. All rights reserved.
 		</p>
+	</div>
+	<nav class="column" aria-label="Footer">
+		<p class="label">Navigate</p>
+		{PRIMARY_NAV.map((item) => <a class="draw-link" href={item.href}>{item.label}</a>)}
+		<a class="draw-link" href={ENQUIRE_HREF}>Enquire</a>
+		<a class="draw-link" href={CAREERS_HREF}>Careers as a performer</a>
+	</nav>
+	<div class="column">
+		<p class="label">Follow us</p>
+		<a class="draw-link" href={SITE.instagramUrl} rel="me noopener">Instagram</a>
+		<a class="draw-link" href={SITE.facebookUrl} rel="me noopener">Facebook</a>
+		<a class="draw-link email" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+		<a class="draw-link phone" href={`tel:${SITE.phoneE164}`}>{SITE.phoneDisplay}</a>
 	</div>
 </footer>
 
 <style>
+	/* One row on wide screens: the mark and legal lines on the left, the link columns beside them. */
 	.site-footer {
-		display: flex;
-		flex-direction: column;
-		gap: 72px;
-		padding: 96px var(--gutter) 40px;
+		display: grid;
+		grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(0, 1fr));
+		align-items: start;
+		gap: 48px 64px;
+		padding: 72px var(--gutter) 56px;
 		background: var(--ink);
 		color: var(--cream);
 	}
@@ -45,17 +46,31 @@ const year = new Date().getFullYear()
 		color: var(--cream);
 	}
 
-	.columns {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 64px;
+	.identity {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 24px;
+	}
+
+	.mark {
+		width: auto;
+		height: 64px;
+		opacity: 0.9;
+	}
+
+	.legal {
+		font: 400 11px/1.9 var(--font-sans);
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		opacity: 0.5;
 	}
 
 	.column {
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		gap: 20px;
+		gap: 18px;
 		font: 500 11px/1 var(--font-sans);
 		letter-spacing: 0.28em;
 		text-transform: uppercase;
@@ -75,24 +90,36 @@ const year = new Date().getFullYear()
 		letter-spacing: 0.12em;
 	}
 
-	.base {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 28px;
-		text-align: center;
+	/* Tablets: the identity takes its own row above the two link columns. */
+	@media (max-width: 1000px) {
+		.site-footer {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.identity {
+			grid-column: 1 / -1;
+			flex-direction: row;
+			align-items: center;
+		}
 	}
 
-	.mark {
-		width: auto;
-		height: 72px;
-		opacity: 0.9;
-	}
+	/* Phones: links first, then the mark and legal lines to close the page. */
+	@media (max-width: 600px) {
+		.site-footer {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 40px;
+			padding: 56px var(--gutter) 40px;
+		}
 
-	.legal {
-		font: 400 11px/1.8 var(--font-sans);
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		opacity: 0.5;
+		.identity {
+			order: 1;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+		}
+
+		.mark {
+			height: 56px;
+		}
 	}
 </style>

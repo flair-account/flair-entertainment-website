@@ -18,7 +18,14 @@ const getLogoHeight = ({ image, weight = 1 }: ClientLogo): number => {
 	return Math.round(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, height)))
 }
 
+/**
+ * Copies of the set in each half of the looping track. One set of about ten logos is roughly 1600px
+ * wide, so two keep each half wider than a 2560px screen and the loop never shows a gap.
+ */
+const SETS_PER_HALF = 2
+
 const logos = CLIENT_LOGOS.map((logo) => ({ ...logo, height: getLogoHeight(logo) }))
+const sets = Array.from({ length: SETS_PER_HALF * 2 }, (_, index) => index)
 ---
 
 <section class="trusted" aria-labelledby="trusted-heading">
@@ -26,10 +33,10 @@ const logos = CLIENT_LOGOS.map((logo) => ({ ...logo, height: getLogoHeight(logo)
 	<div class="viewport">
 		<ul class="track">
 			{
-				[0, 1].map((copy) =>
+				sets.map((set) =>
 					logos.map((logo) => (
-						<li aria-hidden={copy === 1 ? 'true' : undefined}>
-							<Image src={logo.image} alt={copy === 1 ? '' : logo.name} height={logo.height} densities={[1, 2]} style={`height: ${logo.height}px`} />
+						<li aria-hidden={set > 0 ? 'true' : undefined}>
+							<Image src={logo.image} alt={set > 0 ? '' : logo.name} height={logo.height} densities={[1, 2]} style={`height: ${logo.height}px`} />
 						</li>
 					)),
 				)
@@ -89,7 +96,8 @@ const logos = CLIENT_LOGOS.map((logo) => ({ ...logo, height: getLogoHeight(logo)
 		gap: 72px;
 		width: max-content;
 		padding-right: 72px;
-		animation: scroll 48s linear infinite;
+		/* About 45px a second across a half of two sets; scale it with SETS_PER_HALF or the logo count. */
+		animation: scroll 72s linear infinite;
 	}
 
 	.track li {

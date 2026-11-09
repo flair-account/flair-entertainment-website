@@ -31,6 +31,56 @@ const { headerVariant = 'default', ...seo } = Astro.props
 		<slot name="head" />
 	</head>
 	<body>
+		{/*
+			Text waits for the web fonts so the fallback face never shows, then fades in. It runs at the top of
+			the body, after the inlined stylesheet has declared the fonts and before any text paints. Fonts that
+			arrive almost at once skip the fade, and the wait is capped so a slow connection still gets readable
+			text in the metric-matched fallback. Later pages of the same visit have the fonts cached and skip the
+			hold entirely, so the page transition never snapshots a page without its text. TEXT must match
+			`.fonts-pending` in global.css.
+		*/}
+		<script is:inline>
+			;(() => {
+				const MAX_WAIT_MS = 1000
+				const QUIET_MS = 150
+				const FADE_MS = 450
+				const SEEN_KEY = 'flair-fonts-seen'
+				const TEXT = 'h1, h2, h3, h4, p, a, li, label, legend, button, dt, dd, figcaption, blockquote'
+				const root = document.documentElement
+				const remember = () => {
+					try {
+						sessionStorage.setItem(SEEN_KEY, '1')
+					} catch {}
+				}
+				let hasSeenFonts = false
+				try {
+					hasSeenFonts = sessionStorage.getItem(SEEN_KEY) === '1'
+				} catch {}
+				if (hasSeenFonts || !document.fonts || !document.fonts.load) return
+				root.classList.add('fonts-pending')
+				let isShown = false
+				const fadeIn = () => {
+					for (const element of document.querySelectorAll(TEXT)) {
+						if (element.querySelector('img, video, picture') || element.parentElement?.closest(TEXT)) continue
+						const box = element.getBoundingClientRect()
+						if (box.bottom < 0 || box.top > innerHeight || !box.width) continue
+						element.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_MS, easing: 'ease-out' })
+					}
+				}
+				const show = () => {
+					if (isShown) return
+					isShown = true
+					if (performance.now() > QUIET_MS && !matchMedia('(prefers-reduced-motion: reduce)').matches) fadeIn()
+					root.classList.remove('fonts-pending')
+					document.dispatchEvent(new Event('fonts-shown'))
+				}
+				Promise.all([document.fonts.load('400 1em Montserrat'), document.fonts.load('1em "Eyesome Script"')]).then(() => {
+					remember()
+					show()
+				}, show)
+				setTimeout(show, MAX_WAIT_MS)
+			})()
+		</script>
 		<a class="skip-link" href="#main">Skip to content</a>
 		<SiteHeader variant={headerVariant} />
 		<main id="main">
@@ -56,8 +106,14 @@ const { headerVariant = 'default', ...seo } = Astro.props
 				{ threshold: WRITE_IN_THRESHOLD }
 			)
 
-			document.querySelectorAll('.display:has(.script:not(.still, .still *))').forEach((heading) => observer.observe(heading))
-			document.querySelectorAll('.write-in').forEach((word) => word.parentElement && observer.observe(word.parentElement))
+			// Words write themselves in only once text is showing, or the opening ones would play out unseen.
+			const startWriting = (): void => {
+				document.querySelectorAll('.display:has(.script:not(.still, .still *))').forEach((heading) => observer.observe(heading))
+				document.querySelectorAll('.write-in').forEach((word) => word.parentElement && observer.observe(word.parentElement))
+			}
+
+			if (document.documentElement.classList.contains('fonts-pending')) document.addEventListener('fonts-shown', startWriting, { once: true })
+			else startWriting()
 		</script>
 	</body>
 </html>
