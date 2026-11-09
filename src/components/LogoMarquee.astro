@@ -19,7 +19,7 @@ const getLogoHeight = ({ image, weight = 1 }: ClientLogo): number => {
 }
 
 /**
- * Copies of the set in each half of the looping track. One set of about ten logos is roughly 1600px
+ * Copies of the set in each half of the looping track. One set of ten logos is roughly 1900px
  * wide, so two keep each half wider than a 2560px screen and the loop never shows a gap.
  */
 const SETS_PER_HALF = 2
@@ -97,7 +97,7 @@ const sets = Array.from({ length: SETS_PER_HALF * 2 }, (_, index) => index)
 		width: max-content;
 		padding-right: 72px;
 		/* About 45px a second across a half of two sets; scale it with SETS_PER_HALF or the logo count. */
-		animation: scroll 72s linear infinite;
+		animation: scroll 84s linear infinite;
 	}
 
 	.track li {

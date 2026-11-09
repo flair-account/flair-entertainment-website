@@ -8,6 +8,7 @@ import hsbc from '@/assets/logos/hsbc.webp'
 import merton from '@/assets/logos/merton.webp'
 import rbc from '@/assets/logos/rbc.webp'
 import hettich from '@/assets/logos/hettich.webp'
+import butterfield from '@/assets/logos/butterfield.webp'
 
 export interface ClientLogo {
 	name: string
@@ -19,7 +20,7 @@ export interface ClientLogo {
 	weight?: number
 }
 
-export const PRESS = ['Bailiwick Express', 'Jersey Evening Post', 'ITV Channel', 'BBC Jersey'] as const
+export const PRESS = ['Bailiwick Express', 'Jersey Evening Post', 'BBC Jersey'] as const
 
 export const CLIENT_LOGOS: readonly ClientLogo[] = [
 	{ name: 'Bailiwick Express', image: bailiwick },
@@ -30,5 +31,6 @@ export const CLIENT_LOGOS: readonly ClientLogo[] = [
 	{ name: 'HSBC', image: hsbc },
 	{ name: 'Merton Hotel', image: merton },
 	{ name: 'RBC', image: rbc },
+	{ name: 'Butterfield', image: butterfield },
 	{ name: 'Hettich', image: hettich },
 ]
