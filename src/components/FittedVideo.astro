@@ -1,6 +1,10 @@
 ---
-import { getImage } from 'astro:assets'
+import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
+import { getThumbHashDataUrl } from '@/lib/getThumbHashDataUrl'
+
+/** Candidate poster widths; the largest that fits the source is always included. */
+const POSTER_WIDTHS = [480, 720, 1080, 1440, 1920]
 
 interface Props {
 	/** Path under `public/`. */
@@ -10,8 +14,8 @@ interface Props {
 	height: number
 	label: string
 	/**
-	 * `ambient` loops silently like a moving photograph; `feature` is a film with sound that the
-	 * visitor starts themselves.
+	 * `ambient` loops silently like a moving photograph; `feature` also loops muted on arrival but
+	 * carries its own sound and pause controls, with playback progress drawn around the sound button.
 	 */
 	mode?: 'ambient' | 'feature'
 	/** Vertical space around the video that must stay on screen with it, as a CSS length. */
@@ -21,73 +25,306 @@ interface Props {
 
 const { src, poster, width, height, label, mode = 'feature', reserve = 'var(--header-h)', class: className } = Astro.props
 
-const posterImage = await getImage({ src: poster, width: Math.min(poster.width, width), format: 'webp', quality: 72 })
-const isAmbient = mode === 'ambient'
+const placeholder = await getThumbHashDataUrl(poster)
+const ratio = width / height
+const posterWidths = [...POSTER_WIDTHS.filter((candidate) => candidate < poster.width), poster.width]
+const isFeature = mode === 'feature'
+const style = [
+	`--ratio: ${ratio}`,
+	`--reserve: ${reserve}`,
+	`aspect-ratio: ${width} / ${height}`,
+	placeholder ? `background-image: url(${placeholder})` : '',
+]
+	.filter(Boolean)
+	.join('; ')
 ---
 
-<div
-	class:list={['fitted-video', className]}
-	style={`--ratio: ${width / height}; --reserve: ${reserve}; aspect-ratio: ${width} / ${height};`}
->
+<div class:list={['fitted-video', className]} style={style} data-player={isFeature ? '' : undefined} data-state="playing">
+	<Image
+		src={poster}
+		alt=""
+		widths={posterWidths}
+		width={poster.width}
+		sizes={`min(100vw, ${Math.round(ratio * 100)}vh)`}
+		quality={72}
+		class="poster"
+		loading="eager"
+		fetchpriority="high"
+	/>
+	<video
+		src={src}
+		width={width}
+		height={height}
+		autoplay
+		muted
+		loop
+		playsinline
+		disablepictureinpicture
+		preload="auto"
+		aria-label={label}
+	></video>
+	{/* Runs as soon as the video is parsed: shows it only once frames arrive, so the poster never flashes black, and stops autoplay for visitors who asked for less motion. */}
+	<script is:inline>
+		;(() => {
+			const video = document.currentScript.previousElementSibling
+			const reveal = () => video.classList.add('is-live')
+			if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				video.autoplay = false
+				video.pause()
+			}
+			video.addEventListener('playing', reveal, { once: true })
+		})()
+	</script>
 	{
-		isAmbient ? (
-			<video
-				src={src}
-				poster={posterImage.src}
-				width={width}
-				height={height}
-				autoplay
-				muted
-				loop
-				playsinline
-				disablepictureinpicture
-				preload="auto"
-				aria-label={label}
-				data-ambient
-			/>
-		) : (
-			<video
-				src={src}
-				poster={posterImage.src}
-				width={width}
-				height={height}
-				controls
-				playsinline
-				preload="metadata"
-				aria-label={label}
-			/>
+		isFeature && (
+			<div class="controls">
+				<button type="button" class="control toggle" data-toggle aria-label="Pause video">
+					<svg class="icon icon-pause" viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M9 6.5v11M15 6.5v11" />
+					</svg>
+					<svg class="icon icon-play" viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M8.5 6.2v11.6L18 12z" />
+					</svg>
+				</button>
+				<button type="button" class="control sound" data-sound aria-label="Sound" aria-pressed="false">
+					<svg class="ring" viewBox="0 0 48 48" aria-hidden="true">
+						<circle class="track" cx="24" cy="24" r="23" pathLength="1" />
+						<circle class="progress" cx="24" cy="24" r="23" pathLength="1" data-ring />
+					</svg>
+					<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M4.5 9.5h3l4.5-4v13l-4.5-4h-3z" />
+						<path class="muted-mark" d="M16 9.5l5 5M21 9.5l-5 5" />
+						<path class="waves" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.2 6.5a7.8 7.8 0 0 1 0 11" />
+					</svg>
+				</button>
+			</div>
 		)
 	}
 </div>
 
-{
-	isAmbient && (
-		<script is:inline>
-			if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-				document.querySelectorAll('video[data-ambient]').forEach((video) => {
-					video.removeAttribute('autoplay')
-					video.pause()
-				})
-			}
-		</script>
-	)
-}
+<script>
+	/** Share of the player that must be on screen for it to keep playing. */
+	const VISIBLE_THRESHOLD = 0.25
+
+	const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+	/**
+	 * Wires a feature player's custom controls. Playback pauses while the player is scrolled out of
+	 * view and resumes on return, unless the visitor paused it themselves.
+	 */
+	const enhancePlayer = (root: HTMLElement): void => {
+		const video = root.querySelector('video')
+		const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')
+		const sound = root.querySelector<HTMLButtonElement>('[data-sound]')
+		const ring = root.querySelector<SVGCircleElement>('[data-ring]')
+		if (!video || !toggle || !sound || !ring) return
+
+		let pausedByVisitor = prefersReducedMotion
+		let frame = 0
+
+		const drawProgress = (): void => {
+			const progress = video.duration ? video.currentTime / video.duration : 0
+			ring.style.strokeDashoffset = String(1 - progress)
+			frame = video.paused ? 0 : requestAnimationFrame(drawProgress)
+		}
+
+		const sync = (): void => {
+			root.dataset.state = video.paused ? 'paused' : 'playing'
+			toggle.setAttribute('aria-label', video.paused ? 'Play video' : 'Pause video')
+			sound.setAttribute('aria-pressed', String(!video.muted))
+			cancelAnimationFrame(frame)
+			drawProgress()
+		}
+
+		const play = (): void => {
+			video.play().catch(sync)
+		}
+
+		const togglePlayback = (): void => {
+			pausedByVisitor = !video.paused
+			if (pausedByVisitor) video.pause()
+			else play()
+		}
+
+		toggle.addEventListener('click', togglePlayback)
+		video.addEventListener('click', togglePlayback)
+		sound.addEventListener('click', () => {
+			video.muted = !video.muted
+			if (video.muted || !video.paused) return
+			pausedByVisitor = false
+			play()
+		})
+		for (const type of ['play', 'pause', 'volumechange', 'loadedmetadata']) video.addEventListener(type, sync)
+
+		new IntersectionObserver(
+			([entry]) => {
+				if (pausedByVisitor) return
+				if (entry?.isIntersecting) play()
+				else video.pause()
+			},
+			{ threshold: VISIBLE_THRESHOLD }
+		).observe(root)
+
+		sync()
+	}
+
+	document.querySelectorAll<HTMLElement>('[data-player]').forEach(enhancePlayer)
+</script>
 
 <style>
 	/*
 	 * The box is as wide as it can be while its height, set by the aspect ratio, still fits the
 	 * viewport minus the reserved space, so the whole frame is always visible without scrolling.
+	 * Three layers fill it: the ThumbHash background on first paint, the poster once decoded, and
+	 * the video once it is actually playing.
 	 */
 	.fitted-video {
+		position: relative;
 		width: min(100%, calc((100vh - var(--reserve)) * var(--ratio)));
 		width: min(100%, calc((100svh - var(--reserve)) * var(--ratio)));
 		margin-inline: auto;
-		background: var(--ink);
+		overflow: hidden;
+		background: var(--ink) center / cover no-repeat;
+	}
+
+	/* Overscan by a pixel so a fractional box width never leaves a sliver of placeholder showing. */
+	.fitted-video :global(.poster),
+	video {
+		position: absolute;
+		inset: -1px;
+		width: calc(100% + 2px);
+		height: calc(100% + 2px);
+		max-width: none;
+		object-fit: cover;
 	}
 
 	video {
+		transition: opacity 0.8s ease;
+	}
+
+	@media (scripting: enabled) {
+		video:not(.is-live) {
+			opacity: 0;
+		}
+	}
+
+	[data-player] video {
+		cursor: pointer;
+	}
+
+	.controls {
+		position: absolute;
+		right: clamp(14px, 4%, 22px);
+		bottom: clamp(14px, 4%, 22px);
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	@media (scripting: none) {
+		.controls {
+			display: none;
+		}
+	}
+
+	.control {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 48px;
+		height: 48px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: rgba(26, 26, 26, 0.4);
+		-webkit-backdrop-filter: blur(10px);
+		backdrop-filter: blur(10px);
+		color: var(--paper);
+		cursor: pointer;
+		transition:
+			background 0.3s ease,
+			opacity 0.4s ease,
+			transform 0.5s var(--ease-out);
+	}
+
+	.control:hover {
+		background: rgba(26, 26, 26, 0.55);
+		transform: scale(1.06);
+	}
+
+	.control:active {
+		transform: scale(0.96);
+	}
+
+	.control:focus-visible {
+		outline: 1px solid var(--paper);
+		outline-offset: 3px;
+	}
+
+	.icon {
+		width: 22px;
+		height: 22px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.4;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.icon-play {
+		fill: currentColor;
+	}
+
+	/* Pause appears only when it is useful: while hovering, focusing or already paused. */
+	.toggle {
+		opacity: 0;
+		transform: translateX(8px);
+		pointer-events: none;
+	}
+
+	.fitted-video:hover .toggle,
+	.toggle:focus-visible,
+	[data-state='paused'] .toggle {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+	}
+
+	.fitted-video:hover .toggle:hover {
+		transform: scale(1.06);
+	}
+
+	[data-state='playing'] .icon-play,
+	[data-state='paused'] .icon-pause {
+		display: none;
+	}
+
+	.ring {
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
-		object-fit: contain;
+		transform: rotate(-90deg);
+		fill: none;
+		stroke-width: 1.5;
+	}
+
+	.track {
+		stroke: rgba(255, 255, 255, 0.26);
+	}
+
+	.progress {
+		stroke: var(--paper);
+		stroke-dasharray: 1;
+		stroke-dashoffset: 1;
+	}
+
+	.sound .waves,
+	.sound[aria-pressed='true'] .muted-mark {
+		display: none;
+	}
+
+	.sound[aria-pressed='true'] .waves {
+		display: inline;
 	}
 </style>

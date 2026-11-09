@@ -8,6 +8,16 @@
 		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* Arial scaled to Montserrat's metrics, so text keeps its size and line breaks when the web font swaps in. */
+@font-face {
+	font-family: 'Montserrat Fallback';
+	src: local('Arial'), local('ArialMT'), local('Helvetica');
+	size-adjust: 113.4%;
+	ascent-override: 85%;
+	descent-override: 22%;
+	line-gap-override: 0%;
+}
+
 @font-face {
 	font-family: 'Eyesome Script';
 	font-style: normal;
@@ -24,7 +34,7 @@
 	--paper: #ffffff;
 	--gutter: clamp(20px, 5vw, 48px);
 	--header-h: 110px;
-	--font-sans: Montserrat, Helvetica, Arial, sans-serif;
+	--font-sans: Montserrat, 'Montserrat Fallback', Helvetica, Arial, sans-serif;
 	--font-script: 'Eyesome Script', 'Brush Script MT', cursive;
 	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 	--ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -247,17 +257,24 @@ a:hover {
 		border-color 0.35s ease;
 }
 
+/*
+ * Section styles must not set a button's colour directly: a scoped rule outranks these and leaves
+ * the label the same colour as the sweep on hover. Override the custom properties instead.
+ */
+.on-dark .button {
+	--sweep: var(--cream);
+	--sweep-text: var(--ink);
+	color: var(--cream);
+}
+
 .button:hover,
-.button:focus-visible {
+.button:focus-visible,
+.on-dark .button:hover,
+.on-dark .button:focus-visible {
 	opacity: 1;
 	background-size: 100% 100%;
 	border-color: var(--sweep);
 	color: var(--sweep-text);
-}
-
-.on-dark .button {
-	--sweep: var(--cream);
-	--sweep-text: var(--ink);
 }
 
 .section {

@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro'
 import { Image } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import FittedVideo from '@/components/FittedVideo.astro'
+import { getThumbHashDataUrl } from '@/lib/getThumbHashDataUrl'
 import EnquireBand from '@/components/EnquireBand.astro'
 import { CASE_STUDIES, getNextStudy } from '@/data/studies'
 import type { CaseStudy } from '@/data/studies'
@@ -16,6 +17,9 @@ export const getStaticPaths = (() =>
 
 const { study } = Astro.props
 const next = getNextStudy(study.slug)
+const stillImage = study.heroImage ?? study.cover
+const mediaRatio = study.video ? study.video.width / study.video.height : 2 / 3
+const stillPlaceholder = study.video ? undefined : await getThumbHashDataUrl(stillImage)
 const site = Astro.site ?? new URL('https://flairentertainment.je')
 
 const breadcrumbs = {
@@ -38,14 +42,14 @@ const breadcrumbs = {
 >
 	<article>
 		<header class="hero section">
-			<div class="media">
+			<div class="media" style={`--media-ratio: ${mediaRatio}`}>
 				{
 					study.video ? (
 						<FittedVideo {...study.video} reserve="calc(var(--header-h) + 96px)" />
 					) : (
-						<div class="still">
+						<div class="still" style={stillPlaceholder ? `background-image: url(${stillPlaceholder})` : undefined}>
 							<Image
-								src={study.heroImage ?? study.cover}
+								src={stillImage}
 								alt={study.coverAlt}
 								widths={[480, 720, 960]} width={960} quality={70}
 								sizes="(max-width: 900px) 100vw, 45vw"
@@ -95,21 +99,35 @@ const breadcrumbs = {
 </BaseLayout>
 
 <style>
+	/*
+	 * Media and copy sit together as one centred group: a portrait film takes only the width its
+	 * height allows instead of floating in half the page, and a landscape one stops at 55%.
+	 */
 	.hero {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		align-items: center;
-		gap: 96px;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		gap: clamp(56px, 7vw, 112px);
 		padding-block: 48px 140px;
 	}
 
+	/*
+	 * The film stays in view while the story scrolls beside it. Top-aligned rather than centred, so
+	 * the copy settling as web fonts load cannot move it.
+	 */
 	.media {
+		position: sticky;
+		top: calc(var(--header-h) + 8px);
 		display: flex;
+		flex: 0 1 calc((100svh - var(--header-h) - 96px) * var(--media-ratio));
 		justify-content: center;
+		min-width: 0;
+		max-width: clamp(45%, calc(100% - 600px), 55%);
 	}
 
 	.still {
 		width: min(100%, calc((100svh - var(--header-h) - 96px) * 2 / 3));
+		background: var(--sand) center / cover no-repeat;
 	}
 
 	.still img {
@@ -120,6 +138,7 @@ const breadcrumbs = {
 
 	.copy {
 		display: flex;
+		flex: 1 1 0;
 		flex-direction: column;
 		gap: 28px;
 		max-width: 560px;
@@ -188,12 +207,20 @@ const breadcrumbs = {
 
 	@media (max-width: 900px) {
 		.hero {
-			grid-template-columns: minmax(0, 1fr);
+			flex-direction: column;
 			gap: 56px;
 			padding-block: 24px 96px;
 		}
 
+		.media {
+			position: static;
+			flex: none;
+			width: 100%;
+			max-width: none;
+		}
+
 		.copy {
+			flex: none;
 			max-width: none;
 		}
 	}
