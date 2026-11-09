@@ -12,6 +12,7 @@ import entertainment from '@/assets/home/entertainment.webp'
 import music from '@/assets/home/music.webp'
 import events from '@/assets/home/events.webp'
 import cta from '@/assets/home/cta.webp'
+import together from '@/assets/home/together.webp'
 
 const PILLARS = [
 	{
@@ -38,9 +39,20 @@ const PILLARS = [
 ] as const
 ---
 
-<BaseLayout title={SITE.name} description={SITE.description} image={cta} imageAlt="The Flair Entertainment team">
+<BaseLayout title={SITE.name} description={SITE.description} image={cta} imageAlt="The Flair Entertainment team" headerVariant="overlay">
 	<section class="hero" aria-label="Showreel">
-		<FittedVideo src="/video/hero.mp4" poster={heroPoster} width={1920} height={1080} label="Flair Entertainment showreel" mode="ambient" />
+		<FittedVideo src="/video/hero.mp4" poster={heroPoster} width={1920} height={1080} label="Flair Entertainment showreel" fill />
+		<div class="scrim" aria-hidden="true"></div>
+		<div class="shade" aria-hidden="true"></div>
+		<div class="frame-line" aria-hidden="true"></div>
+		{/* A title card over the opening seconds of the film; the real heading follows in the intro. */}
+		<div class="title-card" aria-hidden="true">
+			<p class="eyebrow">Bespoke entertainment · Jersey</p>
+			<p class="display">Innovation, collaboration<br /><span class="script">&amp; creation</span></p>
+		</div>
+		<p class="occasions" aria-hidden="true">
+			<span>Corporate</span><span class="dot"></span><span>Charity</span><span class="dot"></span><span>Private</span>
+		</p>
 	</section>
 
 	<section class="intro section">
@@ -83,13 +95,13 @@ const PILLARS = [
 		</div>
 		<ul class="team-grid reveal-row">
 			{
-				TEAM.map((member) => (
-					<li>
-						<div class="frame reveal">
-							<Image src={member.photo} alt={member.name} widths={[300, 480, 640]} width={640} quality={70} sizes="(max-width: 700px) 50vw, 25vw" class="media-cover" />
+				TEAM.map((member, index) => (
+					<li class="member">
+						<div class="frame reveal" style={`--write-delay: ${0.2 + index * 0.18}s`}>
+							<Image src={member.cardPhoto} alt="" widths={[300, 480, 640, 960]} width={960} quality={70} sizes="(max-width: 700px) 50vw, 25vw" class="media-cover" />
+							<h3 class="name write-in">{member.name}</h3>
+							<p class="role">{member.role}</p>
 						</div>
-						<p class="name">{member.name}</p>
-						<p class="eyebrow">{member.role}</p>
 					</li>
 				))
 			}
@@ -111,7 +123,7 @@ const PILLARS = [
 	</section>
 
 	<section class="together on-dark" aria-labelledby="together-heading">
-		<Image src={cta} alt="" widths={[800, 1280, 1920]} width={1920} quality={70} sizes="100vw" class="media-cover" />
+		<Image src={together} alt="" widths={[800, 1280, 1920, 2500]} width={2500} quality={70} sizes="100vw" class="media-cover" />
 		<div class="together-copy section">
 			<p class="eyebrow">Working together</p>
 			<h2 id="together-heading" class="display">Ready to create something <span class="script">unforgettable?</span></h2>
@@ -127,8 +139,131 @@ const PILLARS = [
 </BaseLayout>
 
 <style>
+	/*
+	 * The showreel fills the first screen inside a hairline frame. A title card plays over the opening
+	 * seconds and then dissolves, leaving only the film; the same words return as the page's heading
+	 * in the intro below.
+	 */
 	.hero {
-		padding: 0 var(--gutter);
+		--title-out-at: 3.6s;
+		--controls-inset: calc(var(--hero-inset) + 18px);
+		position: relative;
+		height: 100vh;
+		height: 100svh;
+		min-height: 520px;
+		overflow: hidden;
+		background: var(--ink);
+		color: var(--cream);
+	}
+
+	/* Stays after the title card goes, so the cream header always reads against a bright frame. */
+	.scrim {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 220px;
+		background: linear-gradient(to bottom, rgba(10, 10, 10, 0.45), rgba(10, 10, 10, 0));
+		pointer-events: none;
+	}
+
+	.shade {
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.5), rgba(10, 10, 10, 0.22) 60%, rgba(10, 10, 10, 0.45));
+		pointer-events: none;
+		animation: title-out 1.6s var(--ease-in-out) var(--title-out-at) forwards;
+	}
+
+	.frame-line {
+		position: absolute;
+		inset: var(--hero-inset);
+		border: 1px solid rgba(242, 237, 233, 0.55);
+		pointer-events: none;
+		animation: frame-draw 1.8s var(--ease-in-out) 0.2s both;
+	}
+
+	.title-card {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 22px;
+		padding: 0 calc(var(--hero-inset) + 24px);
+		text-align: center;
+		pointer-events: none;
+		animation: title-dissolve 1.4s var(--ease-in-out) var(--title-out-at) forwards;
+	}
+
+	.title-card .eyebrow {
+		color: var(--cream);
+		opacity: 0.8;
+	}
+
+	.title-card .display {
+		font-size: clamp(30px, 4.4vw, 60px);
+		line-height: 1.1;
+	}
+
+	.title-card .script {
+		margin: 0;
+		font-size: 1.55em;
+	}
+
+	.occasions {
+		position: absolute;
+		inset: auto 0 calc(var(--hero-inset) + 28px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 18px;
+		font: 600 9px/1 var(--font-sans);
+		letter-spacing: 0.34em;
+		text-transform: uppercase;
+		pointer-events: none;
+		animation: title-dissolve 1.4s var(--ease-in-out) calc(var(--title-out-at) + 0.1s) forwards;
+	}
+
+	.dot {
+		width: 3px;
+		height: 3px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+
+	@keyframes frame-draw {
+		from {
+			clip-path: inset(0 50% 100% 50%);
+		}
+		to {
+			clip-path: inset(0);
+		}
+	}
+
+	@keyframes title-dissolve {
+		to {
+			opacity: 0;
+			filter: blur(6px);
+			letter-spacing: 0.04em;
+			visibility: hidden;
+		}
+	}
+
+	@keyframes title-out {
+		to {
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.frame-line {
+			animation: none;
+		}
+
+		.title-card,
+		.occasions {
+			animation-name: title-out;
+		}
 	}
 
 	.intro {
@@ -229,23 +364,56 @@ const PILLARS = [
 	.team-grid {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 32px;
+		gap: 24px;
 	}
 
-	.team-grid li {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
+	/*
+	 * Names are written over the top of each portrait and roles set along the bottom, as live text
+	 * rather than baked into the photographs, over soft scrims that keep cream type legible on the
+	 * pale studio backdrop.
+	 */
+	.member .frame {
+		aspect-ratio: 7 / 10;
+		color: var(--cream);
 	}
 
-	.team-grid .frame {
-		margin-bottom: 12px;
+	.member .frame::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(to bottom, rgba(10, 10, 10, 0.42), rgba(10, 10, 10, 0) 32%),
+			linear-gradient(to top, rgba(10, 10, 10, 0.5), rgba(10, 10, 10, 0) 28%);
+		pointer-events: none;
+	}
+
+	.name,
+	.role {
+		position: absolute;
+		z-index: 1;
+		left: clamp(14px, 4%, 22px);
+		right: clamp(14px, 4%, 22px);
+		text-shadow: 0 1px 14px rgba(10, 10, 10, 0.35);
 	}
 
 	.name {
-		font: 300 18px/1.3 var(--font-sans);
-		letter-spacing: 0.06em;
+		top: clamp(22px, 7%, 40px);
+		font: 400 clamp(26px, 2.2vw, 36px) / 1.05 var(--font-script);
+	}
+
+	.role {
+		bottom: clamp(14px, 4%, 22px);
+		font: 600 clamp(9px, 0.8vw, 11px) / 1.5 var(--font-sans);
+		letter-spacing: 0.2em;
 		text-transform: uppercase;
+	}
+
+	.member .frame :global(img) {
+		transition: transform 0.9s var(--ease-out);
+	}
+
+	.member:hover .frame :global(img) {
+		transform: scale(1.04);
 	}
 
 	.quote {
@@ -277,7 +445,8 @@ const PILLARS = [
 	}
 
 	.together > :global(img) {
-		opacity: 0.38;
+		object-position: 50% 38%;
+		opacity: 0.5;
 	}
 
 	.together-copy {
@@ -314,7 +483,16 @@ const PILLARS = [
 
 		.team-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 32px 16px;
+			gap: 16px;
+		}
+
+		.name {
+			font-size: clamp(22px, 5.6vw, 34px);
+		}
+
+		.role {
+			font-size: 10px;
+			letter-spacing: 0.14em;
 		}
 	}
 
@@ -334,6 +512,12 @@ const PILLARS = [
 
 		.spacer {
 			height: 96px;
+		}
+
+		/* Clears the sound button in the corner, which on a phone sits in the same row. */
+		.occasions {
+			bottom: calc(var(--hero-inset) + 88px);
+			gap: 12px;
 		}
 	}
 </style>

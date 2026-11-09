@@ -1,0 +1,173 @@
+---
+import { CAREERS_HREF, ENQUIRE_HREF, PRIMARY_NAV, SITE } from '@/data/site'
+
+interface Props {
+	/** Colour of the toggle, to suit the surface the header sits on. */
+	tone?: 'ink' | 'cream'
+}
+
+const { tone = 'ink' } = Astro.props
+const path = Astro.url.pathname
+const isCurrent = (href: string): boolean => (href === '/' ? path === '/' : path.startsWith(href))
+const LINKS = [...PRIMARY_NAV, { label: 'Enquire', href: ENQUIRE_HREF }, { label: 'Careers', href: CAREERS_HREF }]
+---
+
+<details class:list={['site-menu', `tone-${tone}`]}>
+	<summary>
+		<span class="visually-hidden">Menu</span>
+		<span class="toggle" aria-hidden="true"></span>
+	</summary>
+	<div class="panel">
+		<nav aria-label="Primary">
+			{
+				LINKS.map((item, index) => (
+					<a href={item.href} style={`--index: ${index}`} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+						{item.label}
+					</a>
+				))
+			}
+		</nav>
+		<div class="contact">
+			<a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+			<a href={`tel:${SITE.phoneE164}`}>{SITE.phoneDisplay}</a>
+			<a href={SITE.instagramUrl} rel="me noopener">Instagram</a>
+		</div>
+	</div>
+</details>
+
+<script>
+	/** A details element ignores Escape, so close any open menu on it. */
+	document.addEventListener('keydown', (event) => {
+		if (event.key !== 'Escape') return
+		document.querySelectorAll<HTMLDetailsElement>('.site-menu[open]').forEach((menu) => menu.removeAttribute('open'))
+	})
+</script>
+
+<style>
+	.site-menu {
+		--toggle: var(--ink);
+	}
+
+	.tone-cream {
+		--toggle: var(--cream);
+	}
+
+	summary {
+		position: relative;
+		z-index: 31;
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		margin: 0 -10px;
+		cursor: pointer;
+		list-style: none;
+	}
+
+	summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.toggle,
+	.toggle::before {
+		display: block;
+		width: 24px;
+		height: 1px;
+		background: var(--toggle);
+		transition:
+			transform 0.4s var(--ease-out),
+			background 0.3s ease;
+	}
+
+	.toggle {
+		position: relative;
+		transform: translateY(3px);
+	}
+
+	.toggle::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		transform: translateY(-7px);
+	}
+
+	[open] .toggle {
+		background: var(--cream);
+		transform: rotate(45deg);
+	}
+
+	[open] .toggle::before {
+		background: var(--cream);
+		transform: rotate(-90deg);
+	}
+
+	/* A full-screen ink sheet; the links rise in one after another. */
+	.panel {
+		position: fixed;
+		inset: 0;
+		z-index: 30;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 48px;
+		padding: calc(var(--header-h) + 32px) var(--gutter) max(40px, env(safe-area-inset-bottom));
+		overflow-y: auto;
+		background: var(--ink);
+		color: var(--cream);
+		animation: panel-in 0.45s ease both;
+	}
+
+	nav {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 22px;
+	}
+
+	nav a {
+		color: var(--cream);
+		font: 300 clamp(28px, 8vw, 40px) / 1.1 var(--font-sans);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		animation: link-in 0.7s var(--ease-out) both;
+		animation-delay: calc(0.08s + var(--index) * 0.05s);
+	}
+
+	nav a[aria-current='page'] {
+		font-family: var(--font-script);
+		font-size: clamp(40px, 11vw, 56px);
+		letter-spacing: 0;
+		text-transform: none;
+	}
+
+	.contact {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		font: 500 11px/1.4 var(--font-sans);
+		letter-spacing: 0.14em;
+		animation: link-in 0.7s var(--ease-out) 0.4s both;
+	}
+
+	.contact a {
+		color: var(--cream);
+		opacity: 0.7;
+	}
+
+	@keyframes panel-in {
+		from {
+			opacity: 0;
+		}
+	}
+
+	@keyframes link-in {
+		from {
+			opacity: 0;
+			transform: translateY(18px);
+		}
+	}
+
+	:global(html:has(.site-menu[open])) {
+		overflow: hidden;
+	}
+</style>

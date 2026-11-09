@@ -15,15 +15,20 @@ import hettich from '@/assets/logos/hettich.webp'
 export interface ClientLogo {
 	name: string
 	image: ImageMetadata
+	/**
+	 * Share of the standard logo area this one gets. Below 1 for marks set in a solid block of colour,
+	 * which read far heavier than line artwork of the same size.
+	 */
+	weight?: number
 }
 
 export const PRESS = ['Bailiwick Express', 'Jersey Evening Post', 'ITV Channel', 'BBC Jersey'] as const
 
 export const CLIENT_LOGOS: readonly ClientLogo[] = [
 	{ name: 'Bailiwick Express', image: bailiwick },
-	{ name: 'ITV Channel', image: itv },
+	{ name: 'ITV Channel', image: itv, weight: 0.42 },
 	{ name: 'De Gruchy', image: deGruchy },
-	{ name: 'Jersey Evening Post', image: jep },
+	{ name: 'Jersey Evening Post', image: jep, weight: 0.42 },
 	{ name: 'BBC Jersey', image: bbc },
 	{ name: 'PwC', image: pwc },
 	{ name: 'Ogier', image: ogier },

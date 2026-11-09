@@ -1,8 +1,24 @@
 ---
 import { Image } from 'astro:assets'
 import { CLIENT_LOGOS } from '@/data/logos'
+import type { ClientLogo } from '@/data/logos'
 
-const LOGO_HEIGHT = 56
+/**
+ * Every logo gets the same area rather than the same height, so a long wordmark and a compact mark
+ * carry similar visual weight. 6200px² is a 2:1 logo at about 111x56.
+ */
+const LOGO_AREA = 6200
+/** Bounds that stop a very tall mark towering over the row or a very long one shrinking to a thread. */
+const MIN_HEIGHT = 26
+const MAX_HEIGHT = 68
+
+const getLogoHeight = ({ image, weight = 1 }: ClientLogo): number => {
+	const aspectRatio = image.width / image.height
+	const height = Math.sqrt((LOGO_AREA * weight) / aspectRatio)
+	return Math.round(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, height)))
+}
+
+const logos = CLIENT_LOGOS.map((logo) => ({ ...logo, height: getLogoHeight(logo) }))
 ---
 
 <section class="trusted" aria-labelledby="trusted-heading">
@@ -11,9 +27,9 @@ const LOGO_HEIGHT = 56
 		<ul class="track">
 			{
 				[0, 1].map((copy) =>
-					CLIENT_LOGOS.map((logo) => (
+					logos.map((logo) => (
 						<li aria-hidden={copy === 1 ? 'true' : undefined}>
-							<Image src={logo.image} alt={copy === 1 ? '' : logo.name} height={LOGO_HEIGHT} densities={[1, 2]} />
+							<Image src={logo.image} alt={copy === 1 ? '' : logo.name} height={logo.height} densities={[1, 2]} style={`height: ${logo.height}px`} />
 						</li>
 					)),
 				)
@@ -54,9 +70,6 @@ const LOGO_HEIGHT = 56
 
 	.track img {
 		width: auto;
-		height: 56px;
-		max-width: 180px;
-		object-fit: contain;
 	}
 
 	.viewport:hover .track {

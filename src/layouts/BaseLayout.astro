@@ -6,7 +6,12 @@ import SiteHeader from '@/components/SiteHeader.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { SITE } from '@/data/site'
 
-type Props = SeoProps
+interface Props extends SeoProps {
+	/** `overlay` draws the header in cream over a full-screen opening section, as on the home page. */
+	headerVariant?: 'default' | 'overlay'
+}
+
+const { headerVariant = 'default', ...seo } = Astro.props
 ---
 
 <!doctype html>
@@ -16,7 +21,7 @@ type Props = SeoProps
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="preload" href="/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="/fonts/eyesome-script.woff2" as="font" type="font/woff2" crossorigin />
-		<Seo {...Astro.props} />
+		<Seo {...seo} />
 		<link rel="icon" href="/favicon.ico" sizes="48x48" />
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -27,7 +32,7 @@ type Props = SeoProps
 	</head>
 	<body>
 		<a class="skip-link" href="#main">Skip to content</a>
-		<SiteHeader />
+		<SiteHeader variant={headerVariant} />
 		<main id="main">
 			<slot />
 		</main>
@@ -35,7 +40,8 @@ type Props = SeoProps
 		<script>
 			/**
 			 * Share of a heading that must be visible before its script word writes itself in. The heading
-			 * is observed, not the word: a word clipped to nothing never counts as visible.
+			 * is observed, not the word: a word clipped to nothing never counts as visible. A `.write-in`
+			 * element is observed through its parent for the same reason.
 			 */
 			const WRITE_IN_THRESHOLD = 0.6
 
@@ -43,7 +49,7 @@ type Props = SeoProps
 				(entries) => {
 					for (const entry of entries) {
 						if (!entry.isIntersecting) continue
-						entry.target.querySelectorAll('.script').forEach((word) => word.classList.add('is-written'))
+						entry.target.querySelectorAll('.script, .write-in').forEach((word) => word.classList.add('is-written'))
 						observer.unobserve(entry.target)
 					}
 				},
@@ -51,6 +57,7 @@ type Props = SeoProps
 			)
 
 			document.querySelectorAll('.display:has(.script)').forEach((heading) => observer.observe(heading))
+			document.querySelectorAll('.write-in').forEach((word) => word.parentElement && observer.observe(word.parentElement))
 		</script>
 	</body>
 </html>

@@ -34,6 +34,8 @@
 	--paper: #ffffff;
 	--gutter: clamp(20px, 5vw, 48px);
 	--header-h: 110px;
+	/* Gap between the viewport edge and the hairline frame drawn around the home showreel. */
+	--hero-inset: clamp(14px, 2.4vw, 32px);
 	--font-sans: Montserrat, 'Montserrat Fallback', Helvetica, Arial, sans-serif;
 	--font-script: 'Eyesome Script', 'Brush Script MT', cursive;
 	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -50,7 +52,6 @@
 html {
 	-webkit-text-size-adjust: 100%;
 	text-size-adjust: 100%;
-	scroll-padding-top: var(--header-h);
 }
 
 body {
@@ -422,17 +423,20 @@ a:hover {
 }
 
 /*
- * Script accents in headings reveal left to right as if written, the first time each one scrolls
- * into view (BaseLayout's observer adds `is-written`). Negative insets keep the font's swashes,
- * which reach outside the glyph box, from being clipped.
+ * Script accents in headings, and any `.write-in` element, reveal left to right as if written the
+ * first time each one scrolls into view (BaseLayout's observer adds `is-written`). Negative insets
+ * keep the font's swashes, which reach outside the glyph box, from being clipped. `--write-delay`
+ * lets a row of them write one after another.
  */
 @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-	.display .script {
+	.display .script,
+	.write-in {
 		clip-path: inset(-30% 100% -30% -10%);
 	}
 
-	.display .script.is-written {
-		animation: write-in 1.5s var(--ease-in-out) 0.15s both;
+	.display .script.is-written,
+	.write-in.is-written {
+		animation: write-in 1.5s var(--ease-in-out) var(--write-delay, 0.15s) both;
 	}
 }
 

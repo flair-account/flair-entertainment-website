@@ -20,10 +20,22 @@ interface Props {
 	mode?: 'ambient' | 'feature'
 	/** Vertical space around the video that must stay on screen with it, as a CSS length. */
 	reserve?: string
+	/** Cover the positioned parent edge to edge, cropping the film, instead of fitting it whole. */
+	fill?: boolean
 	class?: string
 }
 
-const { src, poster, width, height, label, mode = 'feature', reserve = 'var(--header-h)', class: className } = Astro.props
+const {
+	src,
+	poster,
+	width,
+	height,
+	label,
+	mode = 'feature',
+	reserve = 'var(--header-h)',
+	fill = false,
+	class: className,
+} = Astro.props
 
 const placeholder = await getThumbHashDataUrl(poster)
 const ratio = width / height
@@ -32,20 +44,20 @@ const isFeature = mode === 'feature'
 const style = [
 	`--ratio: ${ratio}`,
 	`--reserve: ${reserve}`,
-	`aspect-ratio: ${width} / ${height}`,
+	fill ? '' : `aspect-ratio: ${width} / ${height}`,
 	placeholder ? `background-image: url(${placeholder})` : '',
 ]
 	.filter(Boolean)
 	.join('; ')
 ---
 
-<div class:list={['fitted-video', className]} style={style} data-player={isFeature ? '' : undefined} data-state="playing">
+<div class:list={['fitted-video', { 'is-fill': fill }, className]} style={style} data-player={isFeature ? '' : undefined} data-state="playing">
 	<Image
 		src={poster}
 		alt=""
 		widths={posterWidths}
 		width={poster.width}
-		sizes={`min(100vw, ${Math.round(ratio * 100)}vh)`}
+		sizes={fill ? '100vw' : `min(100vw, ${Math.round(ratio * 100)}vh)`}
 		quality={72}
 		class="poster"
 		loading="eager"
@@ -187,6 +199,12 @@ const style = [
 		background: var(--ink) center / cover no-repeat;
 	}
 
+	.is-fill {
+		position: absolute;
+		inset: 0;
+		width: auto;
+	}
+
 	/* Overscan by a pixel so a fractional box width never leaves a sliver of placeholder showing. */
 	.fitted-video :global(.poster),
 	video {
@@ -214,8 +232,8 @@ const style = [
 
 	.controls {
 		position: absolute;
-		right: clamp(14px, 4%, 22px);
-		bottom: clamp(14px, 4%, 22px);
+		right: var(--controls-inset, clamp(14px, 4%, 22px));
+		bottom: var(--controls-inset, clamp(14px, 4%, 22px));
 		display: flex;
 		align-items: center;
 		gap: 10px;
