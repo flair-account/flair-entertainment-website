@@ -422,12 +422,17 @@ a:hover {
 }
 
 /*
- * The script accent in a page's main heading reveals left to right as if written. Negative insets
- * keep the font's swashes, which reach outside the glyph box, from being clipped.
+ * Script accents in headings reveal left to right as if written, the first time each one scrolls
+ * into view (BaseLayout's observer adds `is-written`). Negative insets keep the font's swashes,
+ * which reach outside the glyph box, from being clipped.
  */
-@media (prefers-reduced-motion: no-preference) {
-	h1 .script {
-		animation: write-in 1.5s var(--ease-in-out) 0.25s both;
+@media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+	.display .script {
+		clip-path: inset(-30% 100% -30% -10%);
+	}
+
+	.display .script.is-written {
+		animation: write-in 1.5s var(--ease-in-out) 0.15s both;
 	}
 }
 

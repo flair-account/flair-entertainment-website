@@ -32,5 +32,25 @@ type Props = SeoProps
 			<slot />
 		</main>
 		<SiteFooter />
+		<script>
+			/**
+			 * Share of a heading that must be visible before its script word writes itself in. The heading
+			 * is observed, not the word: a word clipped to nothing never counts as visible.
+			 */
+			const WRITE_IN_THRESHOLD = 0.6
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (!entry.isIntersecting) continue
+						entry.target.querySelectorAll('.script').forEach((word) => word.classList.add('is-written'))
+						observer.unobserve(entry.target)
+					}
+				},
+				{ threshold: WRITE_IN_THRESHOLD }
+			)
+
+			document.querySelectorAll('.display:has(.script)').forEach((heading) => observer.observe(heading))
+		</script>
 	</body>
 </html>
