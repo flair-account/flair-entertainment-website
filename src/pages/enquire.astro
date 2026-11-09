@@ -1,7 +1,8 @@
 ---
 import { Image } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import { FORM_ACTIONS, SITE } from '@/data/site'
+import NetlifyFormFields from '@/components/NetlifyFormFields.astro'
+import { FORM_NAMES, FORM_SUCCESS_HREF, HONEYPOT_FIELD, SITE } from '@/data/site'
 import verticalLogo from '@/assets/brand/vertical-logo.webp'
 
 const site = Astro.site ?? new URL('https://flairentertainment.je')
@@ -34,7 +35,15 @@ const contactPage = {
 	</section>
 
 	<section class="enquiry section" aria-label="Enquiry form">
-		<form class="form" action={FORM_ACTIONS.enquiry} method="post" enctype="text/plain">
+		<form
+			class="form"
+			name={FORM_NAMES.enquiry}
+			method="post"
+			action={FORM_SUCCESS_HREF}
+			data-netlify="true"
+			netlify-honeypot={HONEYPOT_FIELD}
+		>
+			<NetlifyFormFields formName={FORM_NAMES.enquiry} />
 			<div class="field">
 				<label for="first-name">First name</label>
 				<input id="first-name" name="first-name" autocomplete="given-name" required />

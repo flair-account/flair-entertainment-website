@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets'
 import logoLight from '@/assets/brand/logo-light.png'
-import { CAREERS_HREF, ENQUIRE_HREF, FORM_ACTIONS, PRIMARY_NAV, SITE } from '@/data/site'
+import { CAREERS_HREF, ENQUIRE_HREF, PRIMARY_NAV, SITE } from '@/data/site'
 
 const year = new Date().getFullYear()
 ---
@@ -14,15 +14,6 @@ const year = new Date().getFullYear()
 			<a class="draw-link" href={ENQUIRE_HREF}>Enquire</a>
 			<a class="draw-link" href={CAREERS_HREF}>Careers as a performer</a>
 		</nav>
-		<div class="column">
-			<p class="label" id="newsletter-label">Stay in the loop</p>
-			<form class="signup" action={FORM_ACTIONS.newsletter} method="post" enctype="text/plain" aria-labelledby="newsletter-label">
-				<label class="visually-hidden" for="newsletter-email">Email address</label>
-				<input id="newsletter-email" name="email" type="email" placeholder="Email address" autocomplete="email" required />
-				<button type="submit">Sign up <span class="arrow" aria-hidden="true">&rarr;</span></button>
-			</form>
-			<p class="note">We respect your privacy.</p>
-		</div>
 		<div class="column">
 			<p class="label">Follow us</p>
 			<a class="draw-link" href={SITE.instagramUrl} rel="me noopener">Instagram</a>
@@ -71,70 +62,6 @@ const year = new Date().getFullYear()
 	}
 
 	.label {
-		opacity: 0.5;
-	}
-
-	.signup {
-		display: flex;
-		align-self: stretch;
-		justify-content: space-between;
-		gap: 16px;
-		padding-bottom: 12px;
-		border-bottom: 1px solid rgba(242, 237, 233, 0.5);
-		transition: border-color 0.4s ease;
-	}
-
-	.signup input {
-		flex: 1;
-		min-width: 0;
-		padding: 0;
-		border: 0;
-		background: transparent;
-		color: var(--cream);
-		font: 400 13px/1 var(--font-sans);
-		letter-spacing: 0;
-		text-transform: none;
-	}
-
-	.signup input::placeholder {
-		color: var(--cream);
-		opacity: 0.5;
-	}
-
-	.signup input:focus {
-		outline: none;
-	}
-
-	.signup:focus-within {
-		border-bottom-color: var(--cream);
-	}
-
-	.signup button {
-		padding: 0;
-		border: 0;
-		background: none;
-		color: var(--cream);
-		font: 600 10px/1 var(--font-sans);
-		letter-spacing: 0.28em;
-		text-transform: uppercase;
-		cursor: pointer;
-	}
-
-	.arrow {
-		display: inline-block;
-		margin-left: 6px;
-		transition: transform 0.4s var(--ease-out);
-	}
-
-	.signup button:hover .arrow,
-	.signup button:focus-visible .arrow {
-		transform: translateX(4px);
-	}
-
-	.note {
-		font: 400 11px/1.6 var(--font-sans);
-		letter-spacing: 0;
-		text-transform: none;
 		opacity: 0.5;
 	}
 

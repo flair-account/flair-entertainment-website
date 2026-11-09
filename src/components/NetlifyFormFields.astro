@@ -1,0 +1,16 @@
+---
+import { HONEYPOT_FIELD } from '@/data/site'
+
+interface Props {
+	/** The Netlify form name, also set as the form's `name` attribute. */
+	formName: string
+}
+
+const { formName } = Astro.props
+---
+
+{/* Netlify needs `form-name` in the posted body to file the submission. The honeypot stays out of sight and out of the tab order; a bot that fills it is dropped. */}
+<input type="hidden" name="form-name" value={formName} />
+<p class="visually-hidden" aria-hidden="true">
+	<label>Leave this empty <input name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" /></label>
+</p>

@@ -11,5 +11,5 @@ export default defineConfig({
 		// The whole stylesheet is a few KB, so inlining it removes the only render-blocking request.
 		inlineStylesheets: 'always',
 	},
-	integrations: [sitemap({ filter: (page) => !page.includes('/404') })],
+	integrations: [sitemap({ filter: (page) => !page.includes('/404') && !page.includes('/thanks/') })],
 })

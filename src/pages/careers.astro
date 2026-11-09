@@ -1,7 +1,8 @@
 ---
 import { Image } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import { FORM_ACTIONS, SITE } from '@/data/site'
+import NetlifyFormFields from '@/components/NetlifyFormFields.astro'
+import { FORM_NAMES, FORM_SUCCESS_HREF, HONEYPOT_FIELD, SITE } from '@/data/site'
 import tower from '@/assets/performers/tower.webp'
 import hoop from '@/assets/performers/hoop.webp'
 import lift from '@/assets/performers/lift.webp'
@@ -60,7 +61,15 @@ const careersPage = {
 	</section>
 
 	<section class="apply section" aria-label="Performer application">
-		<form class="form" action={FORM_ACTIONS.performer} method="post" enctype="text/plain">
+		<form
+			class="form"
+			name={FORM_NAMES.performer}
+			method="post"
+			action={FORM_SUCCESS_HREF}
+			data-netlify="true"
+			netlify-honeypot={HONEYPOT_FIELD}
+		>
+			<NetlifyFormFields formName={FORM_NAMES.performer} />
 			<div class="field">
 				<label for="first-name">First name</label>
 				<input id="first-name" name="first-name" autocomplete="given-name" required />
@@ -88,7 +97,8 @@ const careersPage = {
 						{
 							DISCIPLINES.map((discipline) => (
 								<label class="choice">
-									<input type="checkbox" name="discipline" value={discipline} />
+									{/* The `[]` suffix makes Netlify keep every ticked box rather than only the last. */}
+									<input type="checkbox" name="discipline[]" value={discipline} />
 									<span>{discipline}</span>
 								</label>
 							))

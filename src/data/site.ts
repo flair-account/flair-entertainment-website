@@ -33,11 +33,16 @@ export const ENQUIRE_HREF = '/enquire/'
 export const CAREERS_HREF = '/careers/'
 
 /**
- * Where the static forms post. The site has no backend, so until a form service is chosen the
- * forms hand the submission to the visitor's mail client.
+ * Netlify Forms names. Netlify finds the forms in the built HTML at deploy and files submissions
+ * under these names, so renaming one starts a new, empty form in the Netlify dashboard.
  */
-export const FORM_ACTIONS = {
-	enquiry: `mailto:${SITE.email}?subject=Booking%20enquiry`,
-	performer: `mailto:${SITE.performerEmail}?subject=Performer%20application`,
-	newsletter: `mailto:${SITE.email}?subject=Newsletter%20sign-up`,
+export const FORM_NAMES = {
+	enquiry: 'booking-enquiry',
+	performer: 'performer-application',
 } as const
+
+/** Name of the honeypot field; each form's `netlify-honeypot` attribute must match it. */
+export const HONEYPOT_FIELD = 'bot-field'
+
+/** Netlify sends the visitor here after a successful submission. */
+export const FORM_SUCCESS_HREF = '/thanks/'
