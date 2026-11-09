@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import FittedVideo from '@/components/FittedVideo.astro'
+import TeamPortrait from '@/components/TeamPortrait.astro'
 import LogoMarquee from '@/components/LogoMarquee.astro'
 import InstagramSection from '@/components/InstagramSection.astro'
 import { CAREERS_HREF, ENQUIRE_HREF, SITE } from '@/data/site'
@@ -72,7 +73,7 @@ const PILLARS = [
 			PILLARS.map((pillar) => (
 				<article class="pillar">
 					<div class="frame reveal">
-						<Image src={pillar.image} alt={pillar.alt} widths={[360, 540, 720, 960]} width={960} quality={70} sizes="(max-width: 900px) 100vw, 33vw" class="media-cover" />
+						<Image src={pillar.image} alt={pillar.alt} widths={[360, 540, 720, 960]} width={960} height={1200} fit="cover" quality={70} sizes="(max-width: 900px) 100vw, 33vw" class="media-cover" />
 					</div>
 					<h2 class="title">{pillar.title}</h2>
 					<p class="text">{pillar.text}</p>
@@ -96,12 +97,16 @@ const PILLARS = [
 		<ul class="team-grid reveal-row">
 			{
 				TEAM.map((member, index) => (
-					<li class="member">
-						<div class="frame reveal" style={`--write-delay: ${0.2 + index * 0.18}s`}>
-							<Image src={member.cardPhoto} alt="" widths={[300, 480, 640, 960]} width={960} quality={70} sizes="(max-width: 700px) 50vw, 25vw" class="media-cover" />
-							<h3 class="name write-in">{member.name}</h3>
-							<p class="role">{member.role}</p>
-						</div>
+					<li>
+						<TeamPortrait
+							photo={member.cardPhoto}
+							name={member.name}
+							role={member.role}
+							widths={[300, 480, 640, 960]}
+							sizes="(max-width: 900px) 50vw, 25vw"
+							writeDelay={0.2 + index * 0.18}
+							class="member reveal"
+						/>
 					</li>
 				))
 			}
@@ -367,53 +372,8 @@ const PILLARS = [
 		gap: 24px;
 	}
 
-	/*
-	 * Names are written over the top of each portrait and roles set along the bottom, as live text
-	 * rather than baked into the photographs, over soft scrims that keep cream type legible on the
-	 * pale studio backdrop.
-	 */
-	.member .frame {
+	.team-grid :global(.member) {
 		aspect-ratio: 7 / 10;
-		color: var(--cream);
-	}
-
-	.member .frame::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background:
-			linear-gradient(to bottom, rgba(10, 10, 10, 0.42), rgba(10, 10, 10, 0) 32%),
-			linear-gradient(to top, rgba(10, 10, 10, 0.5), rgba(10, 10, 10, 0) 28%);
-		pointer-events: none;
-	}
-
-	.name,
-	.role {
-		position: absolute;
-		z-index: 1;
-		left: clamp(14px, 4%, 22px);
-		right: clamp(14px, 4%, 22px);
-		text-shadow: 0 1px 14px rgba(10, 10, 10, 0.35);
-	}
-
-	.name {
-		top: clamp(22px, 7%, 40px);
-		font: 400 clamp(26px, 2.2vw, 36px) / 1.05 var(--font-script);
-	}
-
-	.role {
-		bottom: clamp(14px, 4%, 22px);
-		font: 600 clamp(9px, 0.8vw, 11px) / 1.5 var(--font-sans);
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-	}
-
-	.member .frame :global(img) {
-		transition: transform 0.9s var(--ease-out);
-	}
-
-	.member:hover .frame :global(img) {
-		transform: scale(1.04);
 	}
 
 	.quote {
@@ -486,13 +446,10 @@ const PILLARS = [
 			gap: 16px;
 		}
 
-		.name {
-			font-size: clamp(22px, 5.6vw, 34px);
-		}
-
-		.role {
-			font-size: 10px;
-			letter-spacing: 0.14em;
+		.team-grid {
+			--portrait-name-size: clamp(22px, 5.6vw, 34px);
+			--portrait-role-size: 10px;
+			--portrait-role-spacing: 0.14em;
 		}
 	}
 
